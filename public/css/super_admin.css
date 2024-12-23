@@ -1,0 +1,72 @@
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; 
+}
+
+.container-fluid.flex-grow-1 {
+    flex: 1; 
+}
+
+footer {
+    background-color: #343a40;
+    color: #fff;
+    padding: 1rem 0;
+}
+a{
+    text-decoration: none;
+}
+.carousel-inner img {
+    max-height: 500px;
+    object-fit: cover; /* Cắt ảnh sao cho vừa khung */
+}
+.nav-link.active {
+    color: red; /* Màu chữ của mục menu active */
+}
+/* Hover màu cho nút btn-primary */
+.btn-primary:hover {
+    background-color: #0056b3; /* Màu nền khi hover */
+    color: white; /* Màu chữ khi hover */
+}
+
+/* Hover màu cho nút btn-secondary */
+.btn-secondary:hover {
+    background-color: #6c757d; /* Màu nền khi hover */
+    color: white; /* Màu chữ khi hover */
+}
+
+/* Hover màu cho nút btn-success */
+.btn-success:hover {
+    background-color: #343a40; /* Màu nền khi hover */
+    color: white; /* Màu chữ khi hover */
+}
+
+/* Hover màu cho nút btn-danger */
+.btn-danger:hover {
+    background-color: #0056b3; /* Màu nền khi hover */
+    color: white; /* Màu chữ khi hover */
+}
+
+/* Hover màu cho nút btn-warning */
+.btn-warning:hover {
+    background-color: #e0a800; /* Màu nền khi hover */
+    color: white; /* Màu chữ khi hover */
+}
+
+/* Hover màu cho nút btn-info */
+.btn-info:hover {
+    background-color: #17a2b8; /* Màu nền khi hover */
+    color: white; /* Màu chữ khi hover */
+}
+
+/* Hover màu cho nút btn-light */
+.btn-light:hover {
+    background-color: #f8f9fa; /* Màu nền khi hover */
+    color: #343a40; /* Màu chữ khi hover */
+}
+
+/* Hover màu cho nút btn-dark */
+.btn-dark:hover {
+    background-color: #343a40; /* Màu nền khi hover */
+    color: white; /* Màu chữ khi hover */
+}

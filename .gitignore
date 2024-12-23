@@ -1,0 +1,15 @@
+# Laravel
+/vendor
+/node_modules
+/public/storage
+/storage/*.key
+.env
+.env.*
+/public/hot
+/public/uploads
+npm-debug.log
+yarn-error.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
