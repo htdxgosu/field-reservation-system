@@ -11,11 +11,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Pagination\Paginator;
 use Carbon\Carbon;
 use App\Models\ActivityLog;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\OtpMail;
-use App\Mail\ReservationConfirmedMail;
-use App\Mail\UserReservationSuccessMail;
-
+use App\Jobs\SendOtpEmail;
+use App\Jobs\SendReservationEmail;
 class ViewReservationController extends Controller
 {
     public function showForm(Request $request)
@@ -122,7 +119,7 @@ class ViewReservationController extends Controller
             session(['otp_code' => $otpCode, 'otp_expires_at' => $expiresAt,
             'reservation_id' => $reservationId,
             ]);
-            Mail::to($reservation->user->email)->send(new OtpMail($otpCode));
+            SendOtpEmail::dispatch($reservation->user->email, $otpCode);
             return redirect()->route('verify.otp.reserve')->with('swal', [
                 'type' => 'success',  
                 'message' => 'Mã OTP đã được gửi đến email của bạn. Vui lòng kiểm tra hộp thư để xác nhận đơn đặt sân.'
@@ -154,8 +151,7 @@ class ViewReservationController extends Controller
             $field = Field::findOrFail($reservation->field_id);
             $field->rental_count += 1;
             $field->save();
-            Mail::to($reservation->field->owner->email)->send(new ReservationConfirmedMail($reservation));
-            Mail::to($reservation->user->email)->send(new UserReservationSuccessMail($reservation));
+            SendReservationEmail::dispatch($reservation);
             ActivityLog::create([
                 'reservation_id' => $reservation->id,
                 'user_id' => $reservation->user_id,
@@ -182,7 +178,7 @@ class ViewReservationController extends Controller
             // Cập nhật session với mã OTP mới
             session(['otp_code' => $otpCode, 'otp_expires_at' => $expiresAt]);
             // Gửi lại mã OTP vào email
-            Mail::to($reservation->user->email)->send(new OtpMail($otpCode));
+            SendOtpEmail::dispatch($reservation->user->email, $otpCode);
 
             return redirect()->route('verify.otp.reserve')->with([
                 'success' => true,

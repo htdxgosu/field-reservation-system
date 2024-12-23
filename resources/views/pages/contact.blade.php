@@ -71,19 +71,19 @@
                             <div class="bg-white rounded p-4 mb-4">
                                 <h4 class="mb-3">Hệ thống quản lý sân bóng đá Mini</h4>
                                 <div class="d-flex align-items-center flex-shrink-0 mb-3">
-                                    <p class="mb-0 text-dark me-2">Address:</p><i class="fas fa-map-marker-alt text-primary me-2"></i><p class="mb-0">123 Street New York.USA</p>
+                                    <p class="mb-0 text-dark me-2">Address:</p><i class="fas fa-map-marker-alt text-primary me-2"></i><p class="mb-0">12, Nguyễn Văn Bảo, Phường 4, Gò Vấp, Tp. HCM</p>
                                 </div>
                                 <div class="d-flex align-items-center">
-                                    <p class="mb-0 text-dark me-2">Telephone:</p><i class="fa fa-phone-alt text-primary me-2"></i><p class="mb-0">(+012) 3456 7890</p>
+                                    <p class="mb-0 text-dark me-2">Telephone:</p><i class="fa fa-phone-alt text-primary me-2"></i><p class="mb-0">0942279723</p>
                                 </div>
                             </div>
                             <div class="bg-white rounded p-4 mb-0">
                                     <div class="rounded">
                                     <iframe class="rounded w-100" 
-                                            style="height: 385px;" 
-                                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.7174643392236!2d106.68510401533484!3d10.822061692288474!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317528ed35a2e2b9%3A0x12f3c4e616ce4a3d!2zMTIgTmd1eeG7hW4gVsSDbiBCw6FvLCBQaMaw4budbmcgNCwgUXXhuq1uIEfDoyBW4bqvYiwgSG8gQ2jDrQ!5e0!3m2!1svi!2s!4v1700412345678!5m2!1svi!2s"
-                                            loading="lazy" 
-                                            referrerpolicy="no-referrer-when-downgrade">
+                                        style="height: 385px;" 
+                                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.7174643392236!2d106.6867717!3d10.8221315!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3175296a4ce691f9%3A0x2d96eb3ef10ac151!2zMTIgTmd1eeG7hW4gVsSDbiBCw6FvLCBQaMaw4budbmcgNCwgUXXhuq1uIEfDoyBW4bqvYiwgSG8gQ2jDrQ!5e0!3m2!1svi!2s!4v1700412345678!5m2!1svi!2s"
+                                        loading="lazy" 
+                                        referrerpolicy="no-referrer-when-downgrade">
                                     </iframe>
                                 </div>
                             </div>

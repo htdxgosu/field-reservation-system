@@ -129,10 +129,6 @@ public function confirmReservation(Request $request)
             'field_id' => $reservation->field_id,
             'action' => 'đặt',
         ]);
-        $field = Field::find($validated['field_id']);
-        if ($field) {
-            $field->update(['availability' => 'Đã được đặt']);
-        }
         return response()->json([
             'success' => true,
             'message' => 'Đặt sân thành công.',

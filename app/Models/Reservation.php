@@ -30,14 +30,14 @@ class Reservation extends Model
     {
         return $this->belongsTo(Duration::class);
     }
-    public function calculateEndTime()
-{
-    $startTime = \Carbon\Carbon::parse($this->start_time);
-    $duration = \App\Models\Duration::find($this->duration_id); 
-    $durationInMinutes = $duration->duration;
-    $endTime = $startTime->addMinutes($durationInMinutes);
+        public function calculateEndTime()
+    {
+        $startTime = \Carbon\Carbon::parse($this->start_time);
+        $duration = \App\Models\Duration::find($this->duration_id); 
+        $durationInMinutes = $duration->duration;
+        $endTime = $startTime->addMinutes($durationInMinutes);
 
-    return $endTime; 
-}
+        return $endTime; 
+    }
 
 }

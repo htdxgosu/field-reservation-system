@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\OtpMail;
+use App\Jobs\SendOtpEmail;
+
 
 class ProfileController extends Controller
 {
@@ -77,7 +77,7 @@ class ProfileController extends Controller
         session(['otp_code' => $otpCode, 'otp_expires_at' => $expiresAt,
         'password' =>  Hash::make($request->new_password),'email' => $request->email
         ]);
-        Mail::to($request->email)->send(new OtpMail($otpCode));
+        SendOtpEmail::dispatch($request->email, $otpCode);
         // Thông báo thành công
         return redirect()->route('verify.otp.changePass')
                             ->with('swal', [
@@ -121,7 +121,7 @@ class ProfileController extends Controller
             // Cập nhật session với mã OTP mới
             session(['otp_code' => $otpCode, 'otp_expires_at' => $expiresAt]);
             // Gửi lại mã OTP vào email
-            Mail::to($email)->send(new OtpMail($otpCode));
+            SendOtpEmail::dispatch($email, $otpCode);
             return redirect()->route('verify.otp.changePass')->with([
                 'success' => true,
                 'message' => 'OTP mới đã được gửi đến email của bạn.'

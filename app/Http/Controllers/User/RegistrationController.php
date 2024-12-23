@@ -7,10 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\User; 
 use App\Models\FieldOwner; 
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\OtpMail;
-use Illuminate\Support\Facades\Log;
-use App\Mail\AdminNotificationMail;
+use App\Jobs\SendOtpEmail;
+use App\Jobs\SendAdminNotificationEmail;
 
 
 class RegistrationController extends Controller
@@ -66,7 +64,7 @@ class RegistrationController extends Controller
             'business_license' => $businessLicensePath,
         ],
         ]);
-        Mail::to($request->email)->send(new OtpMail($otpCode));
+        SendOtpEmail::dispatch($request->email, $otpCode);
         return response()->json(['success' => true, 'message' => 'OTP đã được gửi đến email của bạn.
                                                                         Bấm OK để chuyển hướng đến trang xác thực OTP.']);
     }
@@ -97,7 +95,7 @@ class RegistrationController extends Controller
                 'business_license' => $registrationData['business_license'],
                 'status' => 'pending',  
             ]);
-            Mail::to('htdxgosu22@gmail.com')->send(new AdminNotificationMail($registrationData['name']));
+            SendAdminNotificationEmail::dispatch($registrationData['name']);
             session()->forget('registration_data');
             session()->flash('success', 'Gửi yêu cầu thành công, vui lòng chờ thông báo kết quả đến email của bạn!');
             return redirect()->route('home');            
@@ -116,7 +114,7 @@ class RegistrationController extends Controller
                 'business_license' => $registrationData['business_license'],
                 'status' => 'pending',  
             ]);
-            Mail::to('htdxgosu22@gmail.com')->send(new AdminNotificationMail($registrationData['name']));
+            SendAdminNotificationEmail::dispatch($registrationData['name']);
             session()->forget('registration_data');
             session()->flash('success', 'Gửi yêu cầu thành công, vui lòng chờ thông báo kết quả đến email của bạn!');
             return redirect()->route('home');            
@@ -134,8 +132,7 @@ class RegistrationController extends Controller
             // Cập nhật session với mã OTP mới
             session(['otp_code' => $otpCode, 'otp_expires_at' => $expiresAt]);
             // Gửi lại mã OTP vào email
-            Mail::to(session('registration_data.email'))->send(new OtpMail($otpCode));
-
+            SendOtpEmail::dispatch(session('registration_data.email'), $otpCode);
             return redirect()->route('verify.otp')->with([
                 'success' => true,
                 'message' => 'OTP mới đã được gửi đến email của bạn.'

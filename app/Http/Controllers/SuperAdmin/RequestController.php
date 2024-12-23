@@ -6,9 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\FieldOwner;
 use App\Models\Field;
-use App\Mail\FieldOwnerApprovedMail;
-use App\Mail\RejectFieldOwnerRequest;
-use Illuminate\Support\Facades\Mail;
+use App\Jobs\SendFieldOwnerApprovedEmail;
+use App\Jobs\SendRejectFieldOwnerRequestEmail;
 
 class RequestController extends Controller
 {
@@ -32,7 +31,7 @@ class RequestController extends Controller
             $request->user->role='field_owner';
             $request->user->save();
             $request->save();
-            Mail::to($request->user->email)->send(new FieldOwnerApprovedMail($request->user));
+            SendFieldOwnerApprovedEmail::dispatch($request->user);
         }
         return redirect()->back()->with('success', 'Yêu cầu đã được duyệt và email thông báo đã được gửi.');
     }
@@ -43,7 +42,7 @@ class RequestController extends Controller
         if ($request && $request->status == 'pending') {
             $request->status = 'rejected';  // Cập nhật trạng thái
             $request->save();
-            Mail::to($request->user->email)->send(new RejectFieldOwnerRequest($request->user));
+            SendRejectFieldOwnerRequestEmail::dispatch($request->user);
         }
     
         return redirect()->back()->with('error', 'Yêu cầu đã bị từ chối và đã gửi email thông báo.');

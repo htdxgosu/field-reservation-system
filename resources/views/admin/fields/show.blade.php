@@ -43,6 +43,9 @@
                 <div class="card-body">
                     <h3 class="card-title mb-2 text-center fw-bold">{{ $field->name }}</h3>
                     <div class="field-details">
+                        <p>
+                          <strong>Địa chỉ</strong>: {{$field->location}}  
+                        </p>
                         <div class="row mb-2">
                             <div class="col-6">
                                 <strong>Loại sân:</strong>

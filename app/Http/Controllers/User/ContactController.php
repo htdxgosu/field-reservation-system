@@ -4,8 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Mail\ContactRequestMail;
-use Illuminate\Support\Facades\Mail;
+use App\Jobs\SendContactRequestEmail;
 class ContactController extends Controller
 {
     public function sendContactEmail(Request $request)
@@ -21,13 +20,13 @@ class ContactController extends Controller
                 'email.regex' => 'Địa chỉ email định dạng hợp lệ là xxx@gmail.com!',
                 'phone.regex' => 'Số điện thoại phải bắt đầu bằng 0 và có 10 số!',
             ]);
-            Mail::to('htdxgosu22@gmail.com')->send(new ContactRequestMail(
+            SendContactRequestEmail::dispatch(
                 $request->name,
                 $request->email,
                 $request->phone,
                 $request->subject,
                 $request->message
-            ));
+            );
             return response()->json(['success' => 'Email đã được gửi thành công!']);
         } catch (\Illuminate\Validation\ValidationException $e) {
             $firstError = $e->validator->errors()->first();

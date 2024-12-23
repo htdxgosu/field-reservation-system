@@ -6,8 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\FieldOwner;
 use App\Models\Field;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\FieldOwnerStatusUpdatedMail;
+use App\Jobs\SendFieldOwnerStatusUpdatedEmail;
 use Illuminate\Support\Facades\Log;
 
 
@@ -43,7 +42,7 @@ class FieldOwnerController extends Controller
         }
         $fieldOwner->user->save();
         $fieldOwner->save();
-        Mail::to($fieldOwner->user->email)->send(new FieldOwnerStatusUpdatedMail($fieldOwner->user, $statusMessage));
+        SendFieldOwnerStatusUpdatedEmail::dispatch($fieldOwner->user, $statusMessage);
 
         // Trở về trang chi tiết chủ sân
         return redirect()->back()->with('success', 'Cập nhật thành công và email thông báo đã gửi.');

@@ -139,7 +139,7 @@ class Field extends Model
             ->limit(3) // Lấy 3 sân đầu tiên
             ->get();
     }
-    public function calculateDistance($latitude, $longitude)
+        public function calculateDistance($latitude, $longitude)
     {
         $earthRadius = 6371;  // Đơn vị: km
 
@@ -154,10 +154,13 @@ class Field extends Model
         $latDiff = $latTo - $latFrom;
 
         // Áp dụng công thức Haversine
-        $angle = 2 * asin(sqrt(pow(sin($latDiff / 2), 2) + cos($latFrom) * cos($latTo) * pow(sin($lonDiff / 2), 2)));
+        $a = sin($latDiff / 2) * sin($latDiff / 2) +
+            cos($latFrom) * cos($latTo) *
+            sin($lonDiff / 2) * sin($lonDiff / 2);
+        $c = 2 * asin(sqrt($a));
 
-        $distance = $earthRadius * $angle;
-        return round($distance, 1);
+        $distance = $earthRadius * $c;
+        return round($distance, 1); // Làm tròn khoảng cách
     }
     public function averageRating()
     {

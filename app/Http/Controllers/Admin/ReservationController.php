@@ -10,8 +10,8 @@ use Illuminate\Http\Request;
 use App\Models\Invoice;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
-use App\Mail\UserReservationSuccessMail;
-use Illuminate\Support\Facades\Mail;
+use App\Jobs\SendReservationEmail;
+
 
 class ReservationController extends Controller
 {
@@ -98,7 +98,7 @@ public function confirm($id)
     $field = Field::findOrFail($reservation->field_id);
     $field->rental_count += 1;
     $field->save();
-    Mail::to($reservation->user->email)->send(new UserReservationSuccessMail($reservation));
+    SendReservationEmail::dispatch($reservation);
     return redirect()->back()->with('swal-type', 'success')->with('swal-message', 'Đơn đã được xác nhận và đã gửi email thông báo.');
 }
 public function edit($id, Request $request)
