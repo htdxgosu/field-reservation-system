@@ -189,3 +189,15 @@ a{
     color:red; /* Màu chữ của mục menu active */
 }
 
+.status-booked {
+    background-color: #dc3545; 
+    color: white;
+    padding: 5px 5px;
+    border-radius: 5px;
+}
+.status-available {
+    background-color: #28a745; 
+    color: white;
+    padding: 5px 5px;
+    border-radius: 5px;
+}

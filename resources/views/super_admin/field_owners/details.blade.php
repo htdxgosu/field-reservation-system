@@ -24,8 +24,8 @@
                 @endif
             </p>
             <p><strong>Ngày đăng ký:</strong> {{ \Carbon\Carbon::parse($fieldOwner->created_at)->format('d/m/Y') }}</p>
-            <p><strong>Giấy phép kinh doanh:</strong> <a href="{{ asset( $fieldOwner->business_license) }}" target="_blank">Xem giấy phép</a></p>
-            <p><strong>Chứng minh thư:</strong> <a href="{{ asset( $fieldOwner->identity) }}" target="_blank">Xem CMND/CCCD</a></p>
+            <p><strong>Giấy phép kinh doanh:</strong> <a href="{{ route('view.file', ['type' => 'business_license', 'file' => basename($fieldOwner->business_license)]) }}" target="_blank">Xem giấy phép</a></p>
+            <p><strong>Chứng minh thư:</strong> <a href="{{ route('view.file', ['type' => 'identity', 'file' => basename($fieldOwner->identity)]) }}" target="_blank">Xem CMND/CCCD</a></p>
             <h5 class="mt-2">Danh sách sân đã đăng ký</h5>
                 @if($fieldOwner->user->fields->count() > 0)
                     <ul>

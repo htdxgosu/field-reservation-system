@@ -213,6 +213,8 @@ Route::middleware([CheckAdmin::class])->prefix('super-admin')->group(function ()
     Route::get('/requests/{request}', [RequestController::class, 'show'])->name('requests.details');
     Route::put('/request/{id}/approve', [RequestController::class, 'approve'])->name('request.approve');
     Route::put('/request/{id}/reject', [RequestController::class, 'reject'])->name('request.reject');
+    Route::get('/view-file/{type}/{file}', [RequestController::class, 'viewFile'])->name('view.file');
+
     //
     Route::get('/field_types', [FieldTypeController::class, 'index'])->name('admin.field_types.index');
     Route::get('/field_types/{id}/edit', [FieldTypeController::class, 'edit'])->name('admin.field_types.edit');

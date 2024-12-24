@@ -1,60 +1,59 @@
 @extends('admin.layouts.dashboard')
-@section('title', 'Quản lý đặt sân')
+@section('title', 'Lịch thi đấu')
 
 @section('content')
 <div class="container">
-    <h3 class="mb-4">Quản lý đặt sân - Dạng lịch</h3>
-    
-    <!-- Dropdown chọn sân -->
-    <div class="mb-3">
-        <label for="fieldSelect" class="form-label">Chọn sân</label>
-        <select id="fieldSelect" class="form-select" onchange="loadFieldSchedule(this.value)">
-            <option value="">Chọn sân</option>
-            <option value="1">Sân 1</option>
-            <option value="2">Sân 2</option>
-            <option value="3">Sân 3</option>
-        </select>
+    <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ route('admin.index') }}">Trang chủ</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Lịch thi đấu các sân</li>
+            </ol>
+    </nav>
+    <div class="col-md-3 mb-4">
+        <form method="GET" action="{{ route('admin.reservations.indexTable') }}" class="d-flex">
+            <div class="form-group flex-grow-1 me-2">
+                <input type="text" id="locDate" name="date" class="form-control" placeholder="Chọn ngày" value="{{ request('date') }}">
+            </div>
+            <a href="{{ route('admin.reservations.indexTable') }}" class="btn btn-secondary mx-2">Reset</a>
+            <button type="submit" class="btn btn-primary">Lọc</button>
+        </form>
     </div>
-
-    <!-- Lịch của sân -->
-    <div id="calendar"></div>
-</div>
-
+    <h3 class="mb-4">
+        <i class="fas fa-calendar-alt"></i> Lịch thi đấu các sân ngày {{$dateFormatted}}
+    </h3>
+    <div class="row">
+        @foreach($schedules as $fieldName => $schedule)
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-lg border-light">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h5>{{ $fieldName }}</h5>
+                    </div>
+                    <div class="card-body">
+                        @if(is_string($schedule))
+                         <p class="text-center">
+                            {!! str_replace('Đang trống', '<span class="status-available">Đang trống</span>', $schedule) !!}
+                        </p>
+                        @else
+                            <ul class="list-unstyled text-center">
+                                @foreach($schedule as $item)
+                                <li class="py-3">
+                                    @if($item['status'] === 'Đã được đặt')
+                                        <a href="{{ route('admin.reservations.show',  ['reservation' => $item['reservation_id']]) }}">
+                                        Từ {{ $item['start'] }} đến {{ $item['end'] }}: <span class="status-booked">{{ $item['status'] }}</span>
+                                        </a>
+                                    @else
+                                         Từ {{ $item['start'] }} đến {{ $item['end'] }}: <span class="status-available">{{ $item['status'] }}</span>
+                                    @endif
+                                </li>
+                                @endforeach
+                            </ul>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    </div>
+ </div>
 @endsection
 
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        plugins: ['timeGrid'],
-        initialView: 'timeGridWeek',
-        locale: 'vi',
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'timeGridDay,timeGridWeek'
-        },
-        events: function(info, successCallback, failureCallback) {
-            var events = [
-                {
-                    title: 'Đặt sân A',
-                    start: '2024-12-12T09:00:00',
-                    end: '2024-12-12T11:00:00',
-                    description: 'Đặt sân 1'
-                },
-                {
-                    title: 'Đặt sân B',
-                    start: '2024-12-12T13:00:00',
-                    end: '2024-12-12T15:00:00',
-                    description: 'Đặt sân 2'
-                }
-            ];
-            successCallback(events);
-        }
-    });
 
-    calendar.render();
-});
-</script>
-@endpush

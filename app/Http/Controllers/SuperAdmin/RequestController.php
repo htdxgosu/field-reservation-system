@@ -5,7 +5,7 @@ namespace App\Http\Controllers\SuperAdmin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\FieldOwner;
-use App\Models\Field;
+use Illuminate\Support\Facades\Storage;
 use App\Jobs\SendFieldOwnerApprovedEmail;
 use App\Jobs\SendRejectFieldOwnerRequestEmail;
 
@@ -22,6 +22,18 @@ class RequestController extends Controller
     {
         $request = FieldOwner::findOrFail($id);
         return view('super_admin.requests.details', compact('request'));
+    }
+    public function viewFile($type, $file)
+    {
+        $filePath = $type . '/' . $file;
+    
+        // Kiểm tra nếu file tồn tại trong private disk
+        if (Storage::disk('private')->exists($filePath)) {
+            // Trả về file từ private disk
+            return response()->file(Storage::disk('private')->path($filePath));
+        } else {
+            return abort(404, 'File not found');
+        }
     }
     public function approve($id)
     {

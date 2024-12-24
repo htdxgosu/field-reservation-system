@@ -28,8 +28,12 @@
                 @endif
             </p>
             <p><strong>Thời gian đăng ký:</strong> {{ \Carbon\Carbon::parse($request->created_at)->format('d/m/Y H:i:s') }}</p>
-            <p><strong>Giấy phép kinh doanh:</strong> <a href="{{ asset( $request->business_license) }}" target="_blank">Xem giấy phép</a></p>
-            <p><strong>Chứng minh thư:</strong> <a href="{{ asset($request->identity) }}" target="_blank">Xem CMND/CCCD</a></p>
+            <p><strong>Giấy phép kinh doanh:</strong> 
+            <a href="{{ route('view.file', ['type' => 'business_license', 'file' => basename($request->business_license)]) }}" target="_blank">Xem giấy phép</a>
+           </p>
+            <p><strong>Chứng minh thư:</strong> 
+            <a href="{{ route('view.file', ['type' => 'identity', 'file' => basename($request->identity)]) }}" target="_blank">Xem CMND/CCCD</a>
+            </p>
             @if($request->status == 'pending') 
             <div class="mt-4">
                 <!-- Duyệt yêu cầu -->

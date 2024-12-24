@@ -31,7 +31,7 @@
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <li><a class="dropdown-item" href="{{ route('admin.reservations.index') }}">Dạng bảng</a></li>
-                    <li><a class="dropdown-item" href="{{ route('admin.reservations.indexTable') }}">Dạng lịch</a></li>
+                    <li><a class="dropdown-item" href="{{ route('admin.reservations.indexTable') }}">Lịch thi đấu các sân</a></li>
                 </ul>
             </li>
             <li class="nav-item dropdown">

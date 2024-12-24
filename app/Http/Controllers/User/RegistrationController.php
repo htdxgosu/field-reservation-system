@@ -44,13 +44,11 @@ class RegistrationController extends Controller
             return response()->json(['error' => 'Số điện thoại này đã được đăng ký là chủ sân.'], 400);
         }
         }
-        $identityName = time() . '_' . $request->file('identity')->getClientOriginalName();
-        $request->file('identity')->move(public_path('img/identity'), $identityName);
-        $identityPath = 'img/identity/' . $identityName;
-   
-        $businessLicenseName = time() . '_' . $request->file('business_license')->getClientOriginalName();
-        $request->file('business_license')->move(public_path('img/business_license'), $businessLicenseName);
-        $businessLicensePath = 'img/business_license/' . $businessLicenseName;
+        $identityName = time() . '_' . md5($request->file('identity')->getClientOriginalName()) . '.' . $request->file('identity')->getClientOriginalExtension();
+        $identityPath = $request->file('identity')->storeAs('identity', $identityName, 'private');
+        
+        $businessLicenseName = time() . '_' . md5($request->file('business_license')->getClientOriginalName()) . '.' . $request->file('business_license')->getClientOriginalExtension();
+        $businessLicensePath = $request->file('business_license')->storeAs('business_license', $businessLicenseName, 'private');
         $otpCode = rand(100000, 999999);  // Tạo mã OTP ngẫu nhiên
         $expiresAt = now()->addMinutes(10); 
         session(['otp_code' => $otpCode, 'otp_expires_at' => $expiresAt,

@@ -218,8 +218,71 @@ public function printInvoice($id)
     }
     return view('admin.reservations.invoice', compact('reservation', 'invoice_code'));
 }
-public function indexTable()
-{
-return view('admin.reservations.indexTable');
-}
+    public function indexTable(Request $request)
+    {
+            $date = $request->input('date', Carbon::today()->format('d/m/Y'));  
+            $date = Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d'); 
+            $dateFormatted = Carbon::parse($date)->format('d/m/Y'); 
+
+            $ownerId = auth()->id();
+            $fields = Field::where('user_id', $ownerId)->get();
+
+            $schedules = [];
+
+            foreach ($fields as $field) {
+                // Lấy các đặt sân cho mỗi sân theo ngày
+                $reservations = Reservation::where('field_id', $field->id)
+                                            ->whereDate('start_time', $date)
+                                            ->orderBy('start_time', 'asc')
+                                            ->get();
+
+                if ($reservations->isEmpty()) {
+                    $openingHour = Carbon::parse($field->opening_time); 
+                    $closingHour = Carbon::parse($field->closing_time); 
+
+                    $availableStartTime = $openingHour->format('H:i');
+                    $availableEndTime = $closingHour->format('H:i');
+                    
+                    $schedules[$field->name] = "Từ {$availableStartTime} đến {$availableEndTime}: Đang trống";
+                } else {
+                    // Nếu có lịch đặt sân, lấy giờ còn trống
+                    $availableHours = $field->getAvailableHoursForDate($date);
+                    $schedule = [];
+
+                    // Thêm các lịch đã đặt vào
+                    foreach ($reservations as $reservation) {
+                        $startTime = Carbon::parse($reservation->start_time)->format('H:i');
+                        $endTime = Carbon::parse($reservation->start_time)->addMinutes($reservation->duration->duration)->format('H:i');
+                        $schedule[] = [
+                            'start' => $startTime,
+                            'end' => $endTime,
+                            'status' => 'Đã được đặt',
+                            'reservation_id' => $reservation->id
+                        ];
+                    }
+
+                    // Thêm các giờ còn trống vào
+                    foreach ($availableHours as $availableHour) {
+                        $schedule[] = [
+                            'start' => $availableHour['start'],
+                            'end' => $availableHour['end'],
+                            'status' => 'Đang trống'
+                        ];
+                    }
+
+                    // Sắp xếp lịch theo giờ
+                    usort($schedule, function ($a, $b) {
+                        return strtotime($a['start']) - strtotime($b['start']);
+                    });
+
+                    // Gán lịch vào kết quả trả về
+                    $schedules[$field->name] = [];
+                    foreach ($schedule as $item) {
+                        $schedules[$field->name][] = $item;
+                    }
+                }
+            }
+
+    return view('admin.reservations.indexTable',compact('schedules', 'dateFormatted'));
+    }
 }
