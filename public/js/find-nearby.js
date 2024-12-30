@@ -17,7 +17,6 @@ document.addEventListener("DOMContentLoaded", function () {
         function handleFindNearbyFieldsClick(event) {
             event.preventDefault();  // Ngừng hành động gửi form mặc định
 
-            // Lấy tọa độ của người dùng
             navigator.geolocation.getCurrentPosition(function (position) {
                 // Điền vào các trường ẩn với tọa độ của người dùng
                 var latitudeInput = event.target.closest('.carousel-item').querySelector('.latitude');
@@ -29,8 +28,13 @@ document.addEventListener("DOMContentLoaded", function () {
             }, function (error) {
                 // Xử lý khi không thể lấy tọa độ
                 alert("Không thể lấy tọa độ của bạn.");
-            });
+            },
+                {
+                    enableHighAccuracy: true, // Yêu cầu độ chính xác cao
+                    maximumAge: 0 // Không sử dụng tọa độ đã lưu trong cache
+                });
         }
+
 
         // Gọi hàm để gắn sự kiện ngay khi trang được tải lần đầu
         setFindNearbyFieldsEvent();

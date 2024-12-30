@@ -110,6 +110,7 @@ class FieldController extends Controller
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255|unique:fields,name', // Kiểm tra tên sân không trùng
                 'location' => 'required|string|max:255',
+                'latitude' => 'required|numeric|between:-90,90', 
                 'field_type_id' => 'required|exists:field_types,id',
                 'price_per_hour' => 'required|numeric|min:0.01', // Kiểm tra giá phải lớn hơn 0
                 'peak_price_per_hour' => 'required|numeric|min:0.01', 
@@ -122,7 +123,7 @@ class FieldController extends Controller
                 'name.required' => 'Tên sân là bắt buộc.',
                 'name.unique' => 'Tên sân đã tồn tại. Vui lòng chọn tên khác.',
                 'price_per_hour.min' => 'Giá sân theo giờ phải lớn hơn 0.',
-                'peak_price_per_hour.min' => 'Giá sân giờ cao điểm phải lớn hơn 0.',
+                'peak_price_per_hour.min' => 'Giá sân sau 17h phải lớn hơn 0.',
                 'image_url.image' => 'Ảnh sân chính phải là một tệp hình ảnh.',
                 'image_url.mimes' => 'Ảnh sân chính phải có định dạng jpeg, png, jpg, gif, svg.',
                 'image_url.max' => 'Ảnh sân chính không được vượt quá 2MB.',
@@ -131,7 +132,10 @@ class FieldController extends Controller
                 'second_image_url.max' => 'Ảnh sân phụ không được vượt quá 2MB.',
                 'opening_time.required' => 'Giờ mở cửa là bắt buộc',
                 'closing_time.required' => 'Giờ đóng cửa là bắt buộc',
-                'closing_time.after' => 'Giờ mở cửa phải sau giờ mở cửa',
+                'closing_time.after' => 'Giờ đóng cửa phải sau giờ mở cửa',
+                'latitude.required' => 'Bạn phải chọn vị trí chính xác trên bản đồ.',
+                'latitude.numeric' => 'Bạn phải chọn vị trí chính xác trên bản đồ.',
+                'latitude.between' => 'Bạn phải chọn vị trí chính xác trên bản đồ.',
             ]);
         // Nếu lỗi validate xảy ra
             if ($validator->fails()) {
@@ -144,16 +148,7 @@ class FieldController extends Controller
             if ($request->price_per_hour >= $request->peak_price_per_hour) {
                 return redirect()->back()
                     ->withInput()
-                    ->withErrors(['peak_price_per_hour' => 'Giá giờ cao điểm phải lớn hơn giá thường.']);
-            }
-            $location = $this->geocodingService->geocodeAddress($request->location);
-
-            if ($location) {
-                // Xử lý tọa độ tại đây
-                $latitude = $location['lat'];
-                $longitude = $location['lng'];
-            } else {
-                return redirect()->back()->withErrors(['location' => 'Không thể tìm thấy tọa độ cho địa chỉ này.']);
+                    ->withErrors(['peak_price_per_hour' => 'Giá sau 17h phải lớn hơn giá thường.']);
             }
         
             // Xử lý ảnh sân chính
@@ -180,8 +175,8 @@ class FieldController extends Controller
             $field = new Field();
             $field->name = $request->name;
             $field->location = $request->location;
-            $field->latitude = $latitude; 
-            $field->longitude = $longitude;
+            $field->latitude = $request->latitude; 
+            $field->longitude = $request->longitude;
             $field->field_type_id = $request->field_type_id;
             $field->price_per_hour = $request->price_per_hour;
             $field->peak_price_per_hour = $request->peak_price_per_hour;
@@ -250,6 +245,7 @@ class FieldController extends Controller
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255|unique:fields,name,' . $field->id, // Kiểm tra tên sân không trùng, ngoại trừ sân hiện tại
                 'location' => 'required|string|max:255',
+                'latitude' => 'required|numeric|between:-90,90', 
                 'field_type_id' => 'required|exists:field_types,id',
                 'price_per_hour' => 'required|numeric|min:0.01',
                 'peak_price_per_hour' => 'required|numeric|min:0.01',
@@ -261,7 +257,7 @@ class FieldController extends Controller
             ], [
                 'name.unique' => 'Tên sân đã tồn tại. Vui lòng chọn tên khác.',
                 'price_per_hour.min' => 'Giá sân theo giờ phải lớn hơn 0.',
-                'peak_price_per_hour.min' => 'Giá sân giờ cao điểm phải lớn hơn 0.',
+                'peak_price_per_hour.min' => 'Giá sân sau 17h phải lớn hơn 0.',
                 'image_url.image' => 'Ảnh sân chính phải là một tệp hình ảnh.',
                 'image_url.mimes' => 'Ảnh sân chính phải có định dạng jpeg, png, jpg, gif, svg.',
                 'image_url.max' => 'Ảnh sân chính không được vượt quá 2MB.',
@@ -270,7 +266,8 @@ class FieldController extends Controller
                 'second_image_url.max' => 'Ảnh sân phụ không được vượt quá 2MB.',
                 'opening_time.required' => 'Giờ mở cửa là bắt buộc',
                 'closing_time.required' => 'Giờ đóng cửa là bắt buộc',
-                'closing_time.after' => 'Giờ mở cửa phải sau giờ mở cửa',
+                'closing_time.after' => 'Giờ đóng cửa phải sau giờ mở cửa',
+                'latitude.required' => 'Bạn phải chọn vị trí chính xác trên bản đồ.',
             ]);
         
             if ($validator->fails()) {
@@ -280,26 +277,18 @@ class FieldController extends Controller
                 ]);
             }
         
-            // Kiểm tra điều kiện giá giờ cao điểm phải cao hơn giá thường
+            // Kiểm tra điều kiện giá sau 17h phải cao hơn giá thường
             if ($request->price_per_hour >= $request->peak_price_per_hour) {
                 return redirect()->back()
                     ->withInput()
-                    ->withErrors(['peak_price_per_hour' => 'Giá giờ cao điểm phải lớn hơn giá thường.']);
+                    ->withErrors(['peak_price_per_hour' => 'Giá sau 17h phải lớn hơn giá thường.']);
             }
-            $location = $this->geocodingService->geocodeAddress($request->location);
-
-            if ($location) {
-                // Xử lý tọa độ tại đây
-                $latitude = $location['lat'];
-                $longitude = $location['lng'];
-            } else {
-                return redirect()->back()->withErrors(['location' => 'Không thể tìm thấy tọa độ cho địa chỉ này.']);
-            }
+            
             // Cập nhật thông tin sân bóng
             $field->name = $request->name;
             $field->location = $request->location;
-            $field->latitude = $latitude; 
-            $field->longitude = $longitude;
+            $field->latitude = $request->latitude; 
+            $field->longitude = $request->longitude;
             $field->field_type_id = $request->field_type_id;
             $field->price_per_hour = $request->price_per_hour;
             $field->peak_price_per_hour = $request->peak_price_per_hour;

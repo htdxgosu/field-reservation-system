@@ -27,6 +27,13 @@
                 <div class="form-group mb-2">
                     <label for="location"><strong>Địa điểm</strong> <span class="text-danger">*</span></label>
                     <input type="text" name="location" id="location" class="form-control" value="{{ old('location', $field->location) }}" required>
+                <!-- Input ẩn để lưu tọa độ -->
+                <input type="hidden" id="latitude" name="latitude">
+                <input type="hidden" id="longitude" name="longitude">
+                </div>
+                <div id="mapModal" style="display: none; position: relative; height: 400px; margin: 20px; border: 1px solid #ccc;">
+                <div id="map" style="height: 100%; width: 100%;"></div>
+                <button id="confirmLocationBtn" class="btn btn-success" style="position: absolute; bottom: 10px; right: 10px; z-index: 1000;">Xác nhận vị trí</button>
                 </div>
 
                 <!-- Loại sân -->
@@ -42,13 +49,13 @@
                 <!-- Giá theo giờ -->
                 <div class="form-group mb-2">
                     <label for="price_per_hour"><strong>Giá theo giờ</strong> <span class="text-danger">*</span></label>
-                    <input type="number" name="price_per_hour" id="price_per_hour" class="form-control" value="{{ old('price_per_hour', $field->price_per_hour) }}" required>
+                    <input type="number" name="price_per_hour" id="price_per_hour" class="form-control" value="{{ number_format(old('price_per_hour', $field->price_per_hour), 0, '.', '') }}" required>
                 </div>
 
                 <!-- Giá giờ cao điểm -->
                 <div class="form-group mb-2">
                     <label for="peak_price_per_hour"><strong>Giá sau 17h</strong> <span class="text-danger">*</span></label>
-                    <input type="number" name="peak_price_per_hour" id="peak_price_per_hour" class="form-control" value="{{ old('peak_price_per_hour', $field->peak_price_per_hour) }}" required>
+                    <input type="number" name="peak_price_per_hour" id="peak_price_per_hour" class="form-control" value="{{ number_format(old('price_per_hour', $field->peak_price_per_hour), 0, '.', '') }}" required>
                 </div>
                 <div class="form-group mb-2">
                     <label for="opening_time"><strong>Giờ mở cửa</strong> <span class="text-danger">*</span></label>
@@ -123,4 +130,7 @@
             </script>
         @endif
    
+@endpush
+@push('scripts')  
+    <script src="{{ asset('js/create-field.js') }}"></script>
 @endpush

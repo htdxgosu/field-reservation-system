@@ -24,6 +24,13 @@
                 <div class="mb-3">
                     <label for="location" class="form-label">Địa chỉ <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" id="location" name="location" required>
+                    <!-- Input ẩn để lưu tọa độ -->
+                    <input type="hidden" id="latitude" name="latitude">
+                    <input type="hidden" id="longitude" name="longitude">
+                </div>
+                <div id="mapModal" style="display: none; position: relative; height: 400px; margin: 20px; border: 1px solid #ccc;">
+                    <div id="map" style="height: 100%; width: 100%;"></div>
+                    <button id="confirmLocationBtn" class="btn btn-success" style="position: absolute; bottom: 10px; right: 10px; z-index: 1000;">Xác nhận vị trí</button>
                 </div>
                 <div class="mb-3">
                     <label for="field_type_id" class="form-label">Loại sân <span class="text-danger">*</span></label>
@@ -108,4 +115,7 @@
             </script>
         @endif
    
+@endpush
+@push('scripts')  
+    <script src="{{ asset('js/create-field.js') }}"></script>
 @endpush

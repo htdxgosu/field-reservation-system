@@ -8,6 +8,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 </head>
@@ -22,9 +23,6 @@
             <li class="nav-item">
                 <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.index') ? 'active' : '' }}">Quản lý khách hàng</a>
             </li>
-            <li class="nav-item">
-                <a href="{{route('admin.fields.index') }}" class="nav-link {{ request()->routeIs('admin.fields.index') ? 'active' : '' }}">Quản lý sân bóng</a>
-            </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle {{ request()->routeIs('admin.reservations.index') || request()->routeIs('admin.reservations.indexTable') ? 'active' : '' }}" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   Quản lý đặt sân
@@ -34,6 +32,10 @@
                     <li><a class="dropdown-item" href="{{ route('admin.reservations.indexTable') }}">Lịch thi đấu các sân</a></li>
                 </ul>
             </li>
+            <li class="nav-item">
+                <a href="{{route('admin.fields.index') }}" class="nav-link {{ request()->routeIs('admin.fields.index') ? 'active' : '' }}">Quản lý sân bóng</a>
+            </li>
+            
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle {{ request()->routeIs('admin.revenue.time') || request()->routeIs('admin.revenue.field-revenue') || request()->routeIs('admin.revenue.invoice') ? 'active' : '' }}" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Doanh thu
@@ -65,6 +67,7 @@
      
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     @yield('styles')
