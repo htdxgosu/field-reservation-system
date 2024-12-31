@@ -175,9 +175,13 @@
                                                 Chi tiết
                                             </button>
                                             @elseif($reservation->status ==='đã xác nhận')
-                                            <button class="btn btn-warning btn-sm mx-2" id="payment-button">
-                                                Thanh toán
-                                            </button>
+                                    
+                                            <form action="{{ route('payment.create') }}" method="GET" style="display:inline-block;">
+                                                 <input type="hidden" name="amount" value="{{ $reservation->total_amount }}">
+                                                 <input type="hidden" name="reservation_id" value="{{ $reservation->id }}">
+                                                <button type="submit" class="btn btn-warning btn-sm mx-2">Thanh toán</button>
+                                            </form>
+
                                             <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#inforModal_{{ $reservation->id }}" data-reservation-id="{{ $reservation->id }}">
                                                 Chi tiết
                                             </button>

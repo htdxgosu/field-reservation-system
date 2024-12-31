@@ -92,6 +92,10 @@ Route::get('/welcome', function () {
 Route::post('/submit-review', [ReviewController::class, 'submitReview']);
 Route::post('/submit-rating', [ReviewController::class, 'submitRating']);
 Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+//
+Route::get('/payment', [PaymentController::class, 'createPayment'])->name('payment.create');
+Route::get('/payment/return', [PaymentController::class, 'paymentReturn'])->name('payment.return');
+
 
 Route::get('/verify-otp', function () {
     if (!session()->has('otp_code')) {
