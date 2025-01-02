@@ -15,13 +15,13 @@ class OpenCageGeocoderService
         $this->apiKey = env('OPENCAGE_API_KEY');  // Lấy API key từ .env
     }
 
-    public function geocodeAddress($address)
+    public function geocodeAddress($location)
     {
         $url = 'https://api.opencagedata.com/geocode/v1/json';
 
         $response = $this->client->get($url, [
             'query' => [
-                'q' => $address,
+                'q' => $location,
                 'key' => $this->apiKey
             ]
         ]);

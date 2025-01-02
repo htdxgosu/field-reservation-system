@@ -79,5 +79,5 @@
 
 @endsection
 @push('scripts')  
-    <script src="{{ asset('js/register-owner.js') }}"></script>
+    <script src="{{ asset('js/user/register-owner.js') }}"></script>
 @endpush

@@ -15,7 +15,7 @@
         </div>
         <div class="text-center mt-2">
                 <h4>HÓA ĐƠN</h4>
-                <p><strong>Mã hóa đơn:</strong> {{ $invoice_code }}</p>
+                <p><strong>Mã hóa đơn:</strong> {{ $reservation->invoice->invoice_code }}</p>
                 <p><strong>Ngày lập:</strong> {{ now()->format('d/m/Y H:i') }}</p>
             </div>
         <hr>
@@ -50,7 +50,7 @@
                             <td>{{ number_format($reservation->field->price_per_hour, 0, ',', '.') }} VNĐ/giờ</td>
                         </tr>
                         <tr>
-                            <td><strong>Giá giờ cao điểm (Sau 17h):</strong></td>
+                            <td><strong>Giá sau 17h:</strong></td>
                             <td>{{ number_format($reservation->field->peak_price_per_hour, 0, ',', '.') }} VNĐ/giờ</td>
                         </tr>
                         <tr>

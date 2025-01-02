@@ -120,5 +120,5 @@
    
 @endpush
 @push('scripts')  
-    <script src="{{ asset('js/edit-reservation.js') }}"></script>
+    <script src="{{ asset('js/admin/edit-reservation.js') }}"></script>
 @endpush

@@ -29,7 +29,7 @@
             <div class="col-md-2">
                 <select name="year" class="form-control">
                     <option value="">Chọn năm</option>
-                    @foreach(range(2020, 2024) as $year)
+                    @foreach(range(2022, \Carbon\Carbon::now()->year) as $year)
                         <option value="{{ $year }}" {{ $year == request('year') ? 'selected' : '' }}>
                             {{ $year }}
                         </option>

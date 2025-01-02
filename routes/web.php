@@ -187,6 +187,9 @@ Route::middleware([CheckFieldOwner::class])->prefix('admin')->group(function () 
     Route::get('/reservations/{id}/available-times', [AdminReservationController::class, 'getAvailableTimes']);
     Route::post('/reservations/{id}/pay', [AdminReservationController::class, 'markAsPaid'])->name('admin.reservations.pay');
     Route::get('/reservations/{id}/invoice', [AdminReservationController::class, 'printInvoice'])->name('admin.reservations.invoice');
+    Route::post('/confirm-reservation', [AdminReservationController::class, 'confirmReservationAdmin'])->name('confirm-reservation-admin');
+    Route::post('/store-reservation', [AdminReservationController::class, 'store'])->name('admin.reservations.store');
+
     //
     Route::get('/revenue/time', [RevenueController::class, 'time'])->name('admin.revenue.time');
     Route::get('/revenue/invoice', [RevenueController::class, 'invoice'])->name('admin.revenue.invoice');

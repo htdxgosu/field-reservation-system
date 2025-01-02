@@ -25,6 +25,10 @@ class Reservation extends Model
     {
         return $this->belongsTo(Field::class, 'field_id');
     }
+    public function invoice()
+    {
+        return $this->hasOne(Invoice::class);
+    }
     // Quan hệ với bảng durations
     public function duration()
     {
@@ -37,7 +41,7 @@ class Reservation extends Model
         $durationInMinutes = $duration->duration;
         $endTime = $startTime->addMinutes($durationInMinutes);
 
-        return $endTime; 
+        return $endTime->format('d/m/Y H:i'); 
     }
 
 }

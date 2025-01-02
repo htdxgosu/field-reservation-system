@@ -37,7 +37,7 @@ class FieldController extends Controller
             ->get();
         foreach ($fields as $field) {
             $averageRating = $field->reviews->avg('rating'); 
-            $field->average_rating = $averageRating ?: 0;    
+            $field->average_rating = number_format($averageRating ?: 0, 1); 
         }
         // Trả về view với dữ liệu
         return view('admin.fields.index', compact('fields', 'fieldTypes'));

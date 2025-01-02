@@ -8,6 +8,8 @@ use App\Models\Field;
 use App\Models\Duration;
 use Illuminate\Http\Request;
 use App\Models\Invoice;
+use App\Models\User;
+use App\Models\ActivityLog;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\SendReservationEmail;
@@ -185,15 +187,17 @@ public function update(Request $request, $id)
 public function markAsPaid($id)
 {
     $reservation = Reservation::findOrFail($id);
-
-    // Kiểm tra trạng thái hiện tại
-    if ($reservation->status !== 'đã xác nhận') {
-        return redirect()->back()->with('swal-type', 'error')->with('swal-message', 'Chỉ có thể thanh toán đơn đã được xác nhận.');
-    }
-
     // Cập nhật trạng thái
     $reservation->status = 'đã thanh toán';
     $reservation->save();
+    $invoice_code = 'HD-' . str_pad($reservation->id, 6, '0', STR_PAD_LEFT);
+    $invoice = new Invoice();
+    $invoice->invoice_code = $invoice_code;
+    $invoice->reservation_id = $reservation->id;
+    $invoice->user_id = $reservation->user_id;
+    $invoice->field_id = $reservation->field_id;
+    $invoice->total_amount = $reservation->total_amount;
+    $invoice->save();
 
     return redirect()->back()->with('swal-type', 'success')->with('swal-message', 'Đơn đã được thanh toán thành công!');
 }
@@ -201,22 +205,8 @@ public function printInvoice($id)
 {
     $reservation = Reservation::findOrFail($id);
     $reservation->end_time = $reservation->calculateEndTime(); 
-    // Tạo mã hóa đơn
-    // Kiểm tra xem hóa đơn đã tồn tại chưa
-    $invoice_code = 'HD-' . str_pad($reservation->id, 6, '0', STR_PAD_LEFT);
-    $existingInvoice = Invoice::where('invoice_code', $invoice_code)->first();
-
-    if (!$existingInvoice) {
-        // Nếu hóa đơn chưa tồn tại thì lưu vào cơ sở dữ liệu
-        $invoice = new Invoice();
-        $invoice->invoice_code = $invoice_code;
-        $invoice->reservation_id = $reservation->id;
-        $invoice->user_id = $reservation->user_id;
-        $invoice->field_id = $reservation->field_id;
-        $invoice->total_amount = $reservation->total_amount;
-        $invoice->save();
-    }
-    return view('admin.reservations.invoice', compact('reservation', 'invoice_code'));
+   
+    return view('admin.reservations.invoice', compact('reservation'));
 }
     public function indexTable(Request $request)
     {
@@ -230,6 +220,8 @@ public function printInvoice($id)
             $schedules = [];
 
             foreach ($fields as $field) {
+                $availableStartTimes = $field->getAvailableStartTimes(); 
+                $field->availableStartTimes = $availableStartTimes;
                 // Lấy các đặt sân cho mỗi sân theo ngày
                 $reservations = Reservation::where('field_id', $field->id)
                                             ->whereDate('start_time', $date)
@@ -283,6 +275,111 @@ public function printInvoice($id)
                 }
             }
 
-    return view('admin.reservations.indexTable',compact('schedules', 'dateFormatted'));
+    return view('admin.reservations.indexTable',compact('fields','schedules', 'dateFormatted'));
     }
+        public function confirmReservationAdmin(Request $request)
+    {
+        // Lấy dữ liệu từ form
+        $date = Carbon::createFromFormat('d/m/Y', $request->input('date'))->format('Y-m-d');
+        $startTime = $request->input('start_time');
+        $duration = intval($request->input('duration'));
+        $phone = $request->input('phone');
+        $email = $request->input('email');
+        $name = $request->input('name');
+        $note = $request->input('note');
+        $fieldId = $request->input('field_id');
+        
+        $startDateTime = Carbon::parse($date . ' ' . $startTime);
+        $field = Field::findOrFail($fieldId);
+        $pricePerHour = $field->price_per_hour; 
+        $peakPricePerHour = $field->peak_price_per_hour; 
+        $endTime = $startDateTime->copy()->addMinutes($duration);
+    
+        // Tính số phút trước và sau 17h
+        $peakHourStart = $startDateTime->copy()->setTime(17, 0); // Mốc 17h
+
+        $minutesBeforePeak = 0;
+        $minutesAfterPeak = 0;
+
+        if ($endTime <= $peakHourStart) {
+            // Toàn bộ thời gian trước 17h
+            $minutesBeforePeak = $duration;
+        } elseif ($startDateTime >= $peakHourStart) {
+            // Toàn bộ thời gian sau 17h
+            $minutesAfterPeak = $duration;
+        } else {
+            // Thời gian trước và sau 17h
+            $minutesBeforePeak = abs($peakHourStart->diffInMinutes($startDateTime));
+            $minutesAfterPeak = abs($endTime->diffInMinutes($peakHourStart));
+        }
+
+        // Tính tổng tiền
+        $totalPrice = 0;
+        $totalPrice += ($minutesBeforePeak / 60) * $pricePerHour; // Giá thường
+        $totalPrice += ($minutesAfterPeak / 60) * $peakPricePerHour; // Giá cao điểm
+
+        $totalPrice = round($totalPrice);
+        // Trả về view xác nhận
+        return view('admin.reservations.confirm', 
+        compact('startTime', 'duration', 'phone', 'email', 'field','name','date','totalPrice','note'));
+    }
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'field_id' => 'required|integer',
+            'start_time' => 'required|string',
+            'duration' => 'required|integer',
+            'phone' => 'required|string',
+            'email' => 'required|email',
+            'name' => 'required|string',
+            'totalPrice' => 'required|numeric',
+            'date' => 'required|date',
+            'note' => 'nullable|string',
+        ]);
+        $startDateTime = Carbon::parse($validated['date'] . ' ' . $validated['start_time']);
+        $duration = Duration::where('duration', $validated['duration'])->first();
+        $user = User::firstOrCreate(
+            ['phone' => $validated['phone']],
+            ['name' => $validated['name'], 'email' => $validated['email']]
+        );
+        if ($user->wasRecentlyCreated === false && $user->email !== $validated['email']) {
+            $fieldOwner = $user->role=='field_owner';
+
+            if ($fieldOwner) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Email phải trùng với email của chủ sân.',
+                ], 400);  
+            }            
+             else {
+            $user->email = $validated['email'];
+            $user->save();
+            }
+        }
+        $reservation = new Reservation([
+            'user_id' => $user->id,
+            'field_id' => $validated['field_id'],
+            'start_time' => $startDateTime,
+            'duration_id' => $duration->id,
+            'note' => $validated['note'] ?? null,
+            'total_amount' => $validated['totalPrice'],
+            'status' => 'đã xác nhận',
+        ]);
+        $reservation->save();
+        SendReservationEmail::dispatch($reservation);
+        $field = Field::findOrFail($reservation->field_id);
+        $field->rental_count += 1;
+        $field->save();
+        ActivityLog::create([
+            'reservation_id' => $reservation->id,
+            'user_id' => $reservation->user_id,
+            'field_id' => $reservation->field_id,
+            'action' => 'xác nhận đặt',
+        ]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Đặt sân thành công.',
+        ]);
+    }
+
 }

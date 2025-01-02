@@ -110,8 +110,18 @@ public function confirmReservation(Request $request)
             ['name' => $validated['name'], 'email' => $validated['email']]
         );
         if ($user->wasRecentlyCreated === false && $user->email !== $validated['email']) {
+            $fieldOwner = $user->role=='field_owner';
+
+            if ($fieldOwner) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Email phải trùng với email của chủ sân.',
+                ], 400);  
+            }            
+             else {
             $user->email = $validated['email'];
             $user->save();
+            }
         }
         $reservation = new Reservation([
             'user_id' => $user->id,

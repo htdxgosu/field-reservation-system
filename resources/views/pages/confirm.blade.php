@@ -60,7 +60,7 @@
                                 <td>{{ $field->getFormattedPricePerHourAttribute() }}</td>
                             </tr>
                             <tr>
-                                <td><strong>Giá giờ cao điểm(Sau 17h):</strong></td>
+                                <td><strong>Giá sau 17h:</strong></td>
                                 <td>{{ $field->getFormattedPeakPricePerHourAttribute() }}</td>
                             </tr>
                             <tr>
@@ -99,5 +99,5 @@
     }
 </script>
 @push('scripts')  
-    <script src="{{ asset('js/confirm.js') }}"></script>
+    <script src="{{ asset('js/user/confirm.js') }}"></script>
 @endpush

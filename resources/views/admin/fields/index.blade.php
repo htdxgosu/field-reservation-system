@@ -52,9 +52,9 @@
                                 <a href="{{ route('admin.fields.show', $field->id) }}" class="btn btn-info">Chi tiết</a>
                             </div>
                             <div class="text-warning text-end">
-                                <strong>{{ $field->average_ratings }}</strong>
+                                <strong>{{ $field->average_rating}}</strong>
                                 <i class="fas fa-star"></i>
-                         </div>
+                            </div>
                         </div>
                     </div>
                 </a>

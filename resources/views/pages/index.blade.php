@@ -169,12 +169,14 @@
                 <div class="steps-item p-2 mb-2">
                     <h4 class="text-center">Top 3 sân bóng được sử dụng nhiều nhất</h4>
                     <div class="steps-number">
-                      <ul style="list-style-type: none;">
+                        <ul class="list-unstyled">
                             @foreach ($topRentedFields as $index => $field)
-                               <a href="{{route('fields.show', $field->id)}}" style="color: inherit; ">
-                                <li>
-                                    <strong>{{ $index + 1 }}. {{ $field->name }}  - {{ $field->rental_count }} lượt</strong> 
-                                </li>
+                                <a href="{{ route('fields.show', $field->id) }}" style="color:inherit">
+                                    <li class="d-flex align-items-center py-1">
+                                        <div class="ms-5"><strong>{{ $index + 1 }}.</strong></div>
+                                        <div class="flex-grow-1 ms-3"><strong>{{ $field->name }}</strong></div>
+                                        <div class="me-5"><strong>{{ $field->rental_count }} lượt</strong></div>
+                                    </li>
                                 </a>
                             @endforeach
                         </ul>
@@ -185,12 +187,14 @@
                 <div class="steps-item p-2 mb-2">
                     <h4 class="text-center">Top 3 sân bóng được sử dụng nhiều nhất trong tháng</h4>
                     <div class="steps-number">
-                      <ul style="list-style-type: none;">
+                        <ul class="list-unstyled">
                             @foreach ($topFieldsThisMonth as $index => $field)
-                               <a href="{{route('fields.show', $field->id)}}" style="color: inherit; ">
-                                <li>
-                                    <strong>{{ $index + 1 }}. {{ $field->name }} - {{ $field->rental_count }} lượt</strong> 
-                                </li>
+                                <a href="{{ route('fields.show', $field->id) }}" style="color: inherit;">
+                                    <li class="d-flex align-items-center py-1">
+                                        <div class="ms-5"><strong>{{ $index + 1 }}.</strong></div>
+                                        <div class="flex-grow-1 ms-3"><strong>{{ $field->name }}</strong></div>
+                                        <div class="me-5"><strong>{{ $field->reservations_count }} lượt</strong></div>
+                                    </li>
                                 </a>
                             @endforeach
                         </ul>
@@ -202,13 +206,17 @@
                 <div class="steps-item p-2 mb-2">
                     <h4 class="text-center">Top 3 sân bóng được đánh giá tốt nhất</h4>
                     <div class="steps-number"> 
-                     <ul style="list-style-type: none;">
+                        <ul class="list-unstyled">
                             @foreach ($topFields as $index => $field)
-                               <a href="{{route('fields.show', $field->id)}}" style="color: inherit; ">
-                                <li>
-                                    <strong>{{ $index + 1 }}. {{ $field->name }}</strong>: {{ number_format($field->avg_rating, 1) }} 
-                                    <i class="fas fa-star text-warning"></i> 
-                                </li>
+                                <a href="{{ route('fields.show', $field->id) }}" style="color: inherit;">
+                                    <li class="d-flex align-items-center py-1">
+                                        <div class="ms-5"><strong>{{ $index + 1 }}.</strong></div>
+                                        <div class="flex-grow-1 ms-3"><strong>{{ $field->name }}</strong></div>
+                                        <div class="me-5">
+                                            <strong>{{ number_format($field->avg_rating, 1) }} </strong>
+                                            <i class="fas fa-star text-warning"></i>
+                                        </div>
+                                    </li>
                                 </a>
                             @endforeach
                         </ul>
@@ -299,5 +307,5 @@
 @endif
 @endpush
 @push('scripts')  
-    <script src="{{ asset('js/find-nearby.js') }}"></script>
+    <script src="{{ asset('js/user/find-nearby.js') }}"></script>
 @endpush

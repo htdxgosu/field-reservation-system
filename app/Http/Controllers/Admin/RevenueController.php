@@ -54,10 +54,13 @@ class RevenueController extends Controller
                 ->whereDate('created_at', Carbon::yesterday())
                 ->sum('total_amount');
         
+            $lastMonth = Carbon::now()->subMonth(); 
+
             $lastMonthRevenue += Invoice::where('field_id', $field->id)
-                ->whereMonth('created_at', Carbon::now()->subMonth()->month)
-                ->whereYear('created_at', Carbon::now()->year)
+                ->whereMonth('created_at', $lastMonth->month) 
+                ->whereYear('created_at', $lastMonth->year) 
                 ->sum('total_amount');
+            
                 
              $totalReservationsMonth += Reservation::whereMonth('created_at', Carbon::now()->month)
                 ->whereYear('created_at', Carbon::now()->year)
@@ -251,8 +254,10 @@ class RevenueController extends Controller
             }
 
             if ($monthFilter) {
-                $filteredQuery->whereMonth('created_at', $monthFilter);
+                $filteredQuery->whereMonth('created_at', $monthFilter)
+                              ->whereYear('created_at', Carbon::now()->year); 
             }
+            
             $filteredRevenue = $filteredQuery->sum('total_amount');
         }
 

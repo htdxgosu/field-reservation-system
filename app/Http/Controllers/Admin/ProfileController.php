@@ -27,8 +27,8 @@ class ProfileController extends Controller
         // Validate
         $request->validate([
             'name' => 'required|string|max:255',
-         'email' => 'required|email|regex:/^[a-zA-Z0-9._%+-]{3,}@gmail\.com$/|max:255',
-          'phone' => 'required|regex:/^0\d{9}$/|unique:users,phone,', 
+            'email' => 'required|email|regex:/^[a-zA-Z0-9._%+-]{3,}@gmail\.com$/|max:255',
+            'phone' => 'required|regex:/^0\d{9}$/|unique:users,phone,' . $user->id,
             'address' => '',  
         ], [
             'name.required' => 'Tên không được để trống.',

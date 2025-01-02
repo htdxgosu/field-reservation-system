@@ -25,7 +25,7 @@
                 <div class="row">
                     @foreach($fields as $field)
                         <div class="col-md-6 mb-4 mt-2">
-                            <div class="card d-flex flex-row">
+                            <div class="card d-flex flex-row" style="min-height:440px">
                              <div class="col-md-7 p-2">
                                 <img src="{{ $field->image_url ?? 'default-image.jpg' }}" class="img-fluid rounded hover-effect" alt="Hình ảnh sân" 
                                  style="object-fit: cover; width: 100%; min-height: 400px;">
@@ -238,5 +238,5 @@
 @endsection
 
 @push('scripts')  <!-- Nhúng script riêng cho trang này -->
-    <script src="{{ asset('js/search.js') }}"></script>
+    <script src="{{ asset('js/user/search.js') }}"></script>
 @endpush

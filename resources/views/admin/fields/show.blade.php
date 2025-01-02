@@ -301,5 +301,5 @@
    
 @endpush
 @push('scripts')  
-    <script src="{{ asset('js/reply-review.js') }}"></script>
+    <script src="{{ asset('js/admin/reply-review.js') }}"></script>
 @endpush

@@ -23,17 +23,14 @@
             <li class="nav-item">
                 <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.index') ? 'active' : '' }}">Quản lý khách hàng</a>
             </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle {{ request()->routeIs('admin.reservations.index') || request()->routeIs('admin.reservations.indexTable') ? 'active' : '' }}" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Quản lý đặt sân
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="{{ route('admin.reservations.index') }}">Dạng bảng</a></li>
-                    <li><a class="dropdown-item" href="{{ route('admin.reservations.indexTable') }}">Lịch thi đấu các sân</a></li>
-                </ul>
-            </li>
             <li class="nav-item">
                 <a href="{{route('admin.fields.index') }}" class="nav-link {{ request()->routeIs('admin.fields.index') ? 'active' : '' }}">Quản lý sân bóng</a>
+            </li>
+            <li class="nav-item">
+                <a href="{{route('admin.reservations.index') }}" class="nav-link {{ request()->routeIs('admin.reservations.index') ? 'active' : '' }}">Quản lý đặt sân</a>
+            </li>
+            <li class="nav-item">
+                <a href="{{route('admin.reservations.indexTable') }}" class="nav-link {{ request()->routeIs('admin.reservations.indexTable') ? 'active' : '' }}">Lịch thi đấu các sân</a>
             </li>
             
             <li class="nav-item dropdown">

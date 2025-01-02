@@ -372,6 +372,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
 @push('scripts')  <!-- Nhúng script riêng cho trang này -->
-    <script src="{{ asset('js/reservation-info.js') }}"></script>
+    <script src="{{ asset('js/user/reservation-info.js') }}"></script>
 @endpush
 

@@ -22,8 +22,8 @@
                 <p><strong>Ghi chú:</strong> {{ $reservation->note}}</p>
                 <p><strong>Ngày:</strong> {{ \Carbon\Carbon::parse($reservation->start_time)->format('d/m/Y') }}</p>
                 <p><strong>Thời gian:</strong> {{ \Carbon\Carbon::parse($reservation->start_time)->format('H:i') }} đến 
-                {{\Carbon\Carbon::parse($reservation->end_time)->format('H:i')}}</p>
-                <p><strong>Thời gian chơi:</strong> {{ $reservation->duration->duration }} phút</p> 
+                {{ \Carbon\Carbon::createFromFormat('d/m/Y H:i', $reservation->end_time)->format('H:i') }}</p>
+                <p><strong>Thời gian đá:</strong> {{ $reservation->duration->duration }} phút</p> 
                 <!-- Hiển thị giá -->
                 <p><strong>Trạng thái:</strong>
                     @switch($reservation->status)
@@ -65,7 +65,7 @@
                                 <button type="submit" class="btn btn-warning btn-sm mx-1">Thanh toán</button>
                             </form>
                 @elseif($reservation->status === 'đã thanh toán')
-                        <a href="{{ route('admin.reservations.invoice', $reservation->id) }}" class="btn btn-primary btn-sm mx-1">In hóa đơn</a>
+                        <a href="{{ route('admin.reservations.invoice', $reservation->id) }}" class="btn btn-primary btn-sm mx-1">Xem hóa đơn</a>
                 @endif
                             
             </div>

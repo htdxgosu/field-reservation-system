@@ -95,5 +95,5 @@
         <!-- Contact End -->
 @endsection
 @push('scripts')  
-    <script src="{{ asset('js/contact.js') }}"></script>
+    <script src="{{ asset('js/user/contact.js') }}"></script>
 @endpush

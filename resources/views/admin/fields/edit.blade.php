@@ -132,5 +132,5 @@
    
 @endpush
 @push('scripts')  
-    <script src="{{ asset('js/create-field.js') }}"></script>
+    <script src="{{ asset('js/admin/create-field.js') }}"></script>
 @endpush

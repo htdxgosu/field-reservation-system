@@ -131,14 +131,17 @@ class Field extends Model
                     ->limit(3) 
                     ->get(); 
     }
-    public static function topFieldsThisMonth()
+        public static function topFieldsThisMonth()
     {
-        return self::orderBy('rental_count', 'desc') // Sắp xếp theo số lượng thuê
-            ->whereMonth('updated_at', Carbon::now()->month) // Lọc theo tháng hiện tại
-            ->whereYear('updated_at', Carbon::now()->year) // Lọc theo năm hiện tại
-            ->limit(3) // Lấy 3 sân đầu tiên
+        return self::withCount(['reservations' => function($query) {
+                $query->whereMonth('created_at', Carbon::now()->month) // Lọc theo tháng hiện tại
+                    ->whereYear('created_at', Carbon::now()->year); // Lọc theo năm hiện tại
+            }])
+            ->orderBy('reservations_count', 'desc') // Sắp xếp theo số lượng đặt sân
+            ->limit(3) // Lấy 3 sân có số lần đặt cao nhất
             ->get();
     }
+
         public function calculateDistance($latitude, $longitude)
     {
         $earthRadius = 6371;  // Đơn vị: km

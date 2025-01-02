@@ -10,6 +10,7 @@ use App\Models\News;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use App\Services\OpenCageGeocoderService;
 
 class WebhookController extends Controller
 {
@@ -49,6 +50,10 @@ class WebhookController extends Controller
         if ($intent == 'ThongTinSan') {
             $fieldName = $request->input('queryResult.parameters.fieldName', null);
             return $this->getFieldInfo($fieldName);
+        }
+        if ($intent == 'Tìm sân bóng gần tôi') {
+            $fieldLocation = $request->input('queryResult.parameters.location', null);
+            return $this->findNearby($fieldLocation);
         }
         if ($intent == 'FieldPrices') {
             $fieldName = $request->input('queryResult.parameters.fieldName', null);
@@ -667,6 +672,56 @@ class WebhookController extends Controller
             'fulfillmentText' => $response
         ]);
     }
+    protected $geocodingService;
 
+    public function __construct(OpenCageGeocoderService $geocodingService)
+    {
+        $this->geocodingService = $geocodingService;
+    }
+
+    private function findNearby($location)
+    {
+       
+        $location = implode(', ', array_filter([
+            $location['business-name'] ?? null, // Tên địa điểm
+            $location['street-address'] ?? null, // Địa chỉ đường
+            $location['admin-area'] ?? null, // Khu vực hành chính
+            $location['city'] ?? null, // Thành phố
+            $location['country'] ?? null // Quốc gia
+        ]));
     
+        // Sử dụng dịch vụ OpenCageGeocoderService đã được inject
+        $coordinates = $this->geocodingService->geocodeAddress($location);
+    
+        if ($coordinates && isset($coordinates['lat'], $coordinates['lng'])) {
+            // Tọa độ hợp lệ, trả về vĩ độ và kinh độ
+            $latitude = $coordinates['lat'];
+            $longitude = $coordinates['lng'];
+            $fields = Field::all(); // Lấy tất cả sân bóng
+            foreach ($fields as $field) {
+                $field->distance = $field->calculateDistance($latitude, $longitude); // Gọi hàm tính khoảng cách
+            }
+
+            // Sắp xếp danh sách sân bóng theo khoảng cách
+            $sortedFields = $fields->sortBy('distance')->values();
+
+            // Tạo phản hồi hiển thị tên và địa chỉ sân bóng
+            $response = "Danh sách sân bóng gần {$location} nhất:\n\n";
+            $index = 1; // Khởi tạo biến đếm
+            
+            foreach ($sortedFields as $field) {
+                $response .= "{$index}. {$field->name}\n Địa chỉ: {$field->location}\n (Cách khoảng: " . number_format($field->distance, 2) . " km)\n\n";
+                $index++; // Tăng biến đếm sau mỗi lần lặp
+            }
+            
+        } else {
+                // Nếu không thể tìm thấy tọa độ
+                $response = "Không thể tìm thấy tọa độ cho địa chỉ: '{$location}'.";
+            }
+    
+        // Trả về kết quả cho Dialogflow
+        return response()->json([
+            'fulfillmentText' => $response
+        ]);
+    }
 }

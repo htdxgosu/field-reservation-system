@@ -506,5 +506,5 @@ h1 {
 </style>
 
 @push('scripts')  
-    <script src="{{ asset('js/reserve.js') }}"></script>
+    <script src="{{ asset('js/user/reserve.js') }}"></script>
 @endpush

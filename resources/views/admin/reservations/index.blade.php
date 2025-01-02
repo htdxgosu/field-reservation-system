@@ -95,7 +95,7 @@
 
                 <!-- Thời gian -->
                 <td>{{ \Carbon\Carbon::parse($reservation->start_time)->format('H:i') }} đến 
-                    {{ \Carbon\Carbon::parse($reservation->end_time)->format('H:i') }}</td>
+                      {{ \Carbon\Carbon::createFromFormat('d/m/Y H:i', $reservation->end_time)->format('H:i') }}</td>
 
                 <!-- Trạng thái -->
                 <td>
@@ -136,7 +136,7 @@
                             <button type="submit" class="btn btn-warning btn-sm mx-1">Thanh toán</button>
                         </form>
                     @elseif($reservation->status === 'đã thanh toán')
-                       <a href="{{ route('admin.reservations.invoice', $reservation->id) }}" class="btn btn-primary btn-sm mx-1">In hóa đơn</a>
+                       <a href="{{ route('admin.reservations.invoice', $reservation->id) }}" class="btn btn-primary btn-sm mx-1">Xem hóa đơn</a>
                     @endif
                 </td>
             </tr>
