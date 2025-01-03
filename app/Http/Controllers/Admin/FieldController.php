@@ -155,22 +155,24 @@ class FieldController extends Controller
             $imagePath = null;
             if ($request->hasFile('image_url')) {
                 // Tạo tên tệp duy nhất bằng cách thêm timestamp vào tên
-                $imageName = time() . '_' . $request->file('image_url')->getClientOriginalName();
-                // Lưu ảnh vào thư mục public/img
-                $imagePath = $request->file('image_url')->move(public_path('img'), $imageName);
-                $imagePath = 'img/' . $imageName;
+                $imageName = '1_' . time() . '_' . $request->file('image_url')->getClientOriginalName();
+
+                // Lưu ảnh vào thư mục public/img/field
+                $imagePath = 'img/field/' . $imageName;
+                $request->file('image_url')->move(public_path('img/field'), $imageName);
             }
 
             // Xử lý ảnh sân thứ hai nếu có
             $secondImagePath = null;
             if ($request->hasFile('second_image_url')) {
                 // Tạo tên tệp duy nhất cho ảnh thứ 2
-                $secondImageName = time() . '_' . $request->file('second_image_url')->getClientOriginalName();
-                // Lưu ảnh thứ hai vào thư mục public/img
-                $secondImagePath = $request->file('second_image_url')->move(public_path('img'), $secondImageName);
-                $secondImagePath = 'img/' . $secondImageName;
+                $secondImageName = '2_' . time() . '_' . $request->file('second_image_url')->getClientOriginalName();
+
+                // Lưu ảnh thứ hai vào thư mục public/img/field
+                $secondImagePath = 'img/field/' . $secondImageName;
+                $request->file('second_image_url')->move(public_path('img/field'), $secondImageName);
             }
-        
+
             // Tạo sân bóng mới
             $field = new Field();
             $field->name = $request->name;
@@ -183,9 +185,9 @@ class FieldController extends Controller
             $field->description = $request->description;
             $field->opening_time = $request->opening_time;
             $field->closing_time = $request->closing_time;
-            $field->image_url = $imagePath; // Kiểm tra xem có ảnh không
+            $field->image_url = $imagePath; 
             $field->second_image_url = $secondImagePath;
-            $field->user_id = Auth::id(); // Kiểm tra ảnh thứ hai
+            $field->user_id = Auth::id(); 
             $field->save();
         
             // Thông báo thành công và chuyển hướng về danh sách sân
@@ -208,8 +210,8 @@ class FieldController extends Controller
                     ->with('swal-type', 'error')
                     ->with('swal-message', 'Không thể xóa sân bóng vì có đơn đặt sân liên quan.');
             }
-            // Kiểm tra nếu ảnh chính tồn tại, xóa ảnh khỏi thư mục
-            if (file_exists(public_path($field->image_url))) {
+         
+            if ($field->image_url && file_exists(public_path($field->image_url))) {
                 unlink(public_path($field->image_url)); // Xóa ảnh chính
             }
 
@@ -217,7 +219,7 @@ class FieldController extends Controller
             if ($field->second_image_url && file_exists(public_path($field->second_image_url))) {
                 unlink(public_path($field->second_image_url)); // Xóa ảnh phụ
             }
-            // Xóa sân bóng nếu không có đơn đặt trong trạng thái "pending" hoặc "confirmed"
+
             $field->delete();
 
             // Thông báo thành công và quay lại danh sách sân
@@ -243,7 +245,7 @@ class FieldController extends Controller
         
             // Xác thực dữ liệu
             $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:255|unique:fields,name,' . $field->id, // Kiểm tra tên sân không trùng, ngoại trừ sân hiện tại
+                'name' => 'required|string|max:255|unique:fields,name,' . $field->id, 
                 'location' => 'required|string|max:255',
                 'latitude' => 'required|numeric|between:-90,90', 
                 'field_type_id' => 'required|exists:field_types,id',
@@ -296,34 +298,35 @@ class FieldController extends Controller
             $field->opening_time = $request->opening_time;
             $field->closing_time = $request->closing_time;
         
-                    // Xử lý ảnh sân chính
+            // Xử lý ảnh sân chính
             $imagePath = null;
             if ($request->hasFile('image_url')) {
                 // Tạo tên tệp duy nhất bằng cách thêm timestamp và một chuỗi ngẫu nhiên vào tên
-                $imageName = time() . '_' . $request->file('image_url')->getClientOriginalName();
-                // Lưu ảnh vào thư mục public/img
-                $imagePath = $request->file('image_url')->move(public_path('img'), $imageName);
-                $imagePath = 'img/' . $imageName;
-
+                $imageName = '1_' . time() . '_' . $request->file('image_url')->getClientOriginalName();
+                // Lưu ảnh vào thư mục public/img/field
+                $imagePath = $request->file('image_url')->move(public_path('img/field'), $imageName);
+                $imagePath = 'img/field/' . $imageName;
+            
                 // Xóa ảnh cũ nếu có
                 $oldImagePath = public_path($field->image_url);
                 if ($field->image_url && file_exists($oldImagePath) && is_file($oldImagePath)) {
                     try {
                         unlink($oldImagePath); // Xóa ảnh cũ
                     } catch (\Exception $e) {
-                    
+                        // Xử lý khi không thể xóa ảnh cũ
                     }
                 }
             }
-
+                
+                    
             // Xử lý ảnh phụ nếu có
         $secondImagePath = null;
         if ($request->hasFile('second_image_url')) {
             // Tạo tên tệp duy nhất cho ảnh thứ 2
-            $secondImageName = time() . '_' . $request->file('second_image_url')->getClientOriginalName();
+            $secondImageName ='2_' . time() . '_' . $request->file('second_image_url')->getClientOriginalName();
             // Lưu ảnh thứ hai vào thư mục public/img
-            $secondImagePath = $request->file('second_image_url')->move(public_path('img'), $secondImageName);
-            $secondImagePath = 'img/' . $secondImageName;
+            $secondImagePath = $request->file('second_image_url')->move(public_path('img/field'), $secondImageName);
+            $secondImagePath = 'img/field/' . $secondImageName;
 
             // Xóa ảnh cũ nếu có
             $oldSecondImagePath = public_path($field->second_image_url);

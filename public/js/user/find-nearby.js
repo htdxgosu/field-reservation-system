@@ -16,6 +16,19 @@ document.addEventListener("DOMContentLoaded", function () {
         // Xử lý sự kiện click cho nút "Tìm sân gần tôi"
         function handleFindNearbyFieldsClick(event) {
             event.preventDefault();  // Ngừng hành động gửi form mặc định
+            const form = event.target.closest('form');
+            const fieldType = form.querySelector('select[name="field_type"]').value;
+            const date = form.querySelector('input[name="date"]').value;
+
+            if (!fieldType) {
+                alert('Vui lòng chọn loại sân trước khi tiếp tục.');
+                return;
+            }
+
+            if (!date) {
+                alert('Vui lòng chọn ngày trước khi tiếp tục.');
+                return;
+            }
 
             navigator.geolocation.getCurrentPosition(function (position) {
                 // Điền vào các trường ẩn với tọa độ của người dùng
@@ -23,8 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 var longitudeInput = event.target.closest('.carousel-item').querySelector('.longitude');
                 latitudeInput.value = position.coords.latitude;
                 longitudeInput.value = position.coords.longitude;
-                // Gửi form
-                event.target.closest('form').submit();
+                form.submit();
             }, function (error) {
                 // Xử lý khi không thể lấy tọa độ
                 alert("Không thể lấy tọa độ của bạn.");

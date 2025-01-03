@@ -82,14 +82,20 @@
                 </tr>
             </table>
             <div class="d-flex justify-content-center">
-            <a href="https://zalo.me/{{$field->owner->phone}}" target="_blank">
-                <button style="background-color: #0078ff; border: none; border-radius: 10px; width: 110px; height: 40px; display: flex; justify-content: center; align-items: center; color: white;" class="mx-2 mb-2 fw-bold">
-                    <i class="fab fa-weixin" style="margin-right: 8px;"></i> Zalo
-                </button>
-            </a>
-            <button type="button" class="btn btn-success w-25 mb-2" data-bs-toggle="modal" data-bs-target="#reserveModal{{ $field->id }}">
+                <a href="https://zalo.me/{{$field->owner->phone}}" target="_blank">
+                    <button style="background-color: #0078ff; border: none; border-radius: 10px; width: 110px; height: 40px; display: flex; justify-content: center; align-items: center; color: white;" class="mx-2 mb-2 fw-bold">
+                        <i class="fab fa-weixin" style="margin-right: 8px;"></i> Zalo
+                    </button>
+                </a>
+                @auth
+                    <button type="button" class="btn btn-success w-25 mb-2" data-bs-toggle="modal" data-bs-target="#reserveModal{{ $field->id }}">
                         Đặt sân
-             </button>
+                    </button>
+                @else
+                    <a href="{{ route('login.login') }}" class="btn btn-info mb-2">
+                        Đăng nhập để đặt sân
+                    </a>
+                @endauth
              </div>
                 <div class="modal fade" id="reserveModal{{ $field->id }}" tabindex="-1" 
                 aria-labelledby="reserveModalLabel{{ $field->id }}" aria-hidden="true">
@@ -103,10 +109,10 @@
                         <div class="modal-body">
                             <!-- Form Đặt Sân -->
                             <form id="bookingForm{{ $field->id }}" method="POST"
-                            action="{{ route('check.time.conflict') }}">
+                            action="{{ route('confirm-reservation') }}">
                                 @csrf
                                 <input type="hidden" name="field_id" value="{{ $field->id }}">
-                        
+                                <input type="hidden" name="userId" value="{{ Auth::check() ? Auth::user()->id : '' }}">
                                 <div class="mb-2">
                                     <label for="date{{ $field->id }}" class="form-label"><strong>Ngày thuê sân</strong></label>
                                     <input type="text" class="form-control form-control-sm" name="date" id="date{{ $field->id }}" 
@@ -144,80 +150,16 @@
                                     </select>
                                 </div>
 
+                                <div class="mb-2">
+                                    <label for="note_{{ $field->id }}" class="form-label"><strong>Ghi chú (không bắt buộc)</strong></label>
+                                    <textarea class="form-control" name="note" id="note_{{ $field->id }}" rows="2"></textarea>
+                                </div>
                                
                                 <div class="d-flex justify-content-center mt-4">
                                     <button type="button" class="btn btn-primary mx-2" data-bs-dismiss="modal">Hủy</button>
                                     <button type="button" class="btn btn-success mx-2 continue-btn">
                                         Tiếp tục
                                     </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                </div>
-                <!-- Modal 2: Thông tin cá nhân -->
-            <div class="modal fade" id="personalInfoModal{{ $field->id }}" tabindex="-1" 
-                aria-labelledby="personalInfoModalLabel{{ $field->id }}" aria-hidden="true">
-                <div class="modal-dialog" style="max-width: 400px;">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="personalInfoModalLabel{{ $field->id }}">
-                            <i class="fa fa-user m-2"></i>Thông tin cá nhân</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="personalInfoForm{{ $field->id }}" 
-                                action="{{ route('confirm-reservation') }}" method="POST">
-                                @csrf
-                                <div class="mb-3">
-                                    <label for="name_{{ $field->id }}" class="form-label"><strong>Họ và Tên</strong></label>
-                                    <input type="text" 
-                                        class="form-control" 
-                                        id="name_{{ $field->id }}" 
-                                        name="name" 
-                                        placeholder="Nhập tên của bạn" 
-                                        required>
-                                </div>
-                                <!-- Nhập số điện thoại -->
-                                <div class="mb-3">
-                                    <label for="phone_{{ $field->id }}" class="form-label"><strong>Số điện thoại</strong>
-                                    </label>
-                                    <input type="tel" 
-                                        class="form-control" 
-                                        id="phone_{{ $field->id }}" 
-                                        name="phone" 
-                                        placeholder="0xxxxxxxxx" 
-                                        required>
-                                        <div id="phoneError_{{ $field->id }}" class="text-danger mt-2" style="display:none;">
-                                            Số điện thoại không hợp lệ.
-                                        </div>
-                                </div>
-
-                                <!-- Nhập email -->
-                                <div class="mb-3">
-                                    <label for="email_{{ $field->id }}" class="form-label"><strong>Email</strong>
-                                    </label>
-                                    <input type="email" 
-                                        class="form-control" 
-                                        id="email_{{ $field->id }}" 
-                                        name="email" 
-                                        placeholder="xxx@gmail.com"
-                                        required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="note_{{ $field->id }}" class="form-label"><strong>Ghi chú (không bắt buộc)</strong></label>
-                                    <textarea class="form-control" name="note" id="note_{{ $field->id }}" rows="2"></textarea>
-                                </div>
-                                <!-- Trường ẩn để lưu thông tin đặt sân -->
-                                <input type="hidden" name="field_id" value="{{ $field->id }}">
-                                <input type="hidden" name="date" value="">
-                                <input type="hidden" name="start_time" value="">
-                                <input type="hidden" name="duration" value="">
-
-                                <div class="d-flex justify-content-center mt-4">
-                                    <button type="button" class="btn btn-secondary mx-2" data-bs-dismiss="modal">Hủy</button>
-                                    <button type="submit" class="btn btn-success mx-2">Xác nhận</button>
                                 </div>
                             </form>
                         </div>
@@ -315,12 +257,12 @@
                             @endfor
                         </span>
                         <p class="small">{{ $review->comment }}</p>
+                        <p class="custom-small-text text-end">{{ \Carbon\Carbon::parse($review->created_at)->format('d/m/Y') }}</p>
                         @if(session('phone') === $review->user->phone)
                             <div class="text-end">
                                 <button type="button" class="btn btn-danger btn-sm mb-2" onclick="window.deleteReview('{{ $review->id }}')">Xóa đánh giá</button>
                             </div>
                         @endif
-                        <p class="custom-small-text text-end">{{ \Carbon\Carbon::parse($review->created_at)->format('d/m/Y') }}</p>
                         @if($review->reply)
                             <div class="ms-4">
                                 <strong>Phản hồi từ chủ sân</strong>
@@ -335,7 +277,7 @@
                 </div>
                 <div class="row">
                 <div class="text-end">
-                        <button type="button" class="btn btn-primary" id="writeCommentBtn" data-bs-toggle="modal" data-bs-target="#ratingModal">
+                        <button type="button" class="btn btn-secondary" id="writeCommentBtn" data-bs-toggle="modal" data-bs-target="#ratingModal">
                         Đánh giá
                     </button>
                 </div>

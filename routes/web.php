@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\FieldController as AdminFieldController;
 use App\Http\Controllers\Admin\ReservationController as AdminReservationController;
 use App\Http\Middleware\CheckFieldOwner;
 use App\Http\Middleware\CheckAdmin;
+use App\Http\Middleware\CheckLoggedIn;
 use App\Http\Controllers\SuperAdmin\SuperAdminController;
 use App\Http\Controllers\SuperAdmin\FieldOwnerController;
 use App\Http\Controllers\SuperAdmin\RequestController;
@@ -48,12 +49,6 @@ Route::get('/about', function () {
 Route::get('/news', [UserNewsController::class, 'index'])->name('news');
 //
 Route::get('/news/{id}', [UserNewsController::class, 'show'])->name('news.show');
-
-// Trang Yêu cầu đặt sân
-Route::get('/reservation-info', function () {
-    return view('pages.reservation-info', ['title' => 'Reservation-info']);
-})->name('reservation-info');
-
 
 // Trang Contact
 Route::get('/contact', function () {
@@ -118,23 +113,8 @@ Route::post('/verify-otp-reserve', [ViewReservationController::class, 'verifyOtp
 
 Route::get('/search-field', [UserFieldController::class, 'search'])->name('fields.search');
 
-// Route cho yêu cầu AJAX (POST)
-Route::post('/reservations', [UserReservationController::class, 'store'])->name('reservations.store');
+//
 
-//
-Route::match(['get', 'post'], '/reservation-info', 
-    [ViewReservationController::class, 'showForm'])->name('reservation-form');
-//
-Route::post('/logout', function (\Illuminate\Http\Request $request) {
-    // Xóa session cụ thể 
-    $request->session()->forget('phone');
-
-    return redirect('/reservation-info')->with('success', 'Đăng xuất thành công.');
-})->name('logout');
-//
-Route::post('/get-available-durations', [UserFieldController::class, 'getAvailableDurations']);
-Route::post('/check-time-conflict', [UserReservationController::class, 'checkTimeConflict'])->name('check.time.conflict');
-Route::post('/confirm-reservation', [UserReservationController::class, 'confirmReservation'])->name('confirm-reservation');
 Route::post('/check-available-hours', [UserReservationController::class, 'checkAvailableHours']);
 // Route để hủy yêu cầu đặt sân
 Route::delete('/cancel-reservation/{reservation}', [ViewReservationController::class, 'cancel'])->name('cancel-reservation');
@@ -147,6 +127,27 @@ Route::match(['get', 'post'], '/webhook', [WebhookController::class, 'handleWebh
 // Route đăng nhập admin
 Route::get('/login', [LoginAuthController::class, 'showLoginForm'])->name('login.login');
 Route::post('/login', [LoginAuthController::class, 'login'])->name('login.login.post');
+Route::post('/logout', [LoginAuthController::class, 'logout'])->name('logout');
+// Route cho trang đăng ký
+Route::get('/register', [LoginAuthController::class, 'showRegistrationForm'])->name('register');
+Route::post('register', [LoginAuthController::class, 'register'])->name('register.submit');
+//
+ Route::post('/get-available-durations', [UserFieldController::class, 'getAvailableDurations']);
+ Route::post('/check-time-conflict', [UserReservationController::class, 'checkTimeConflict'])->name('check.time.conflict');
+ Route::post('/confirm-reservation', [UserReservationController::class, 'confirmReservation'])->name('confirm-reservation');
+ // Route cho yêu cầu AJAX (POST)
+ Route::post('/reservations', [UserReservationController::class, 'store'])->name('reservations.store');
+ //
+Route::middleware([CheckLoggedIn::class])->group(function () {
+    //
+    Route::get('change-password', [LoginAuthController::class, 'showChangePasswordForm'])->name('changePasswordForm');
+    Route::post('/change-password', [LoginAuthController::class, 'changePassword'])->name('updatePassword');
+    // Trang Yêu cầu đặt sân
+    Route::get('/reservation-info', [ViewReservationController::class, 'show'])->name('reservation-info');
+   
+
+});
+
 
 // Route cho admin, sử dụng middleware auth:admin
 Route::middleware([CheckFieldOwner::class])->prefix('admin')->group(function () {
@@ -209,6 +210,8 @@ Route::middleware([CheckFieldOwner::class])->prefix('admin')->group(function () 
 Route::post('/admin/logout', [LoginAuthController::class, 'logout'])->name('admin.logout');
 Route::middleware([CheckAdmin::class])->prefix('super-admin')->group(function () {
     Route::get('/', [SuperAdminController::class, 'index'])->name('super_admin.index');
+    //
+    Route::post('/logout', [LoginAuthController::class, 'logout'])->name('super.admin.logout');
     //
     Route::get('/field-owners', [FieldOwnerController::class,'index'])->name('field-owners.index');
     Route::get('/field-owners/{id}', [FieldOwnerController::class, 'show'])->name('field-owners.details');

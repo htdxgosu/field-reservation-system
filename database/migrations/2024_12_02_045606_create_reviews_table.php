@@ -15,6 +15,7 @@ class CreateReviewsTable extends Migration
             $table->unsignedBigInteger('reservation_id');
             $table->integer('rating'); // Đánh giá
             $table->text('comment')->nullable(); // Bình luận
+            $table->text('reply')->nullable();
             $table->timestamps();
 
             // Khóa ngoại

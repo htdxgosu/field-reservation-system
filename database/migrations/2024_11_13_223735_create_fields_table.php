@@ -24,6 +24,9 @@ class CreateFieldsTable extends Migration
             $table->string('image_url')->nullable(); // Đường dẫn hình ảnh
             $table->string('second_image_url')->nullable(); // Thêm cột 'second_image_url'
             $table->enum('availability', ['Đang trống', 'Đang sử dụng', 'Đang bảo trì']); // Tình trạng sân
+            $table->decimal('latitude', 10, 7)->nullable();  // Vị trí vĩ độ
+            $table->decimal('longitude', 10, 7)->nullable();
+            $table->integer('rental_count')->default(0);
             $table->timestamps(); // Thời gian tạo và cập nhật
              // Thêm cột user_id (khóa ngoại liên kết với bảng users)
              $table->foreignId('user_id')->constrained('users')->onDelete('cascade');

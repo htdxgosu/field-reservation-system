@@ -42,52 +42,52 @@ class ReservationController extends Controller
     }
     return response()->json(['conflict' => $conflict]);
 }
-public function confirmReservation(Request $request)
-{
-    // Lấy dữ liệu từ form
-    $date = Carbon::createFromFormat('d/m/Y', $request->input('date'))->format('Y-m-d');
-    $startTime = $request->input('start_time');
-    $duration = intval($request->input('duration'));
-    $phone = $request->input('phone');
-    $email = $request->input('email');
-    $name = $request->input('name');
-    $note = $request->input('note');
-    $fieldId = $request->input('field_id');
+    public function confirmReservation(Request $request)
+    {
+        Log::info('Dữ liệu từ request:', $request->all());
+        // Lấy dữ liệu từ form
+        $date = Carbon::createFromFormat('d/m/Y', $request->input('date'))->format('Y-m-d');
+        $startTime = $request->input('start_time');
+        $duration = intval($request->input('duration'));
+        $userId = $request->input('userId');
+        $note = $request->input('note');
+        $fieldId = $request->input('field_id');
+        
+        $user = User::findOrFail($userId);
+        $startDateTime = Carbon::parse($date . ' ' . $startTime);
+        $field = Field::findOrFail($fieldId);
+        $pricePerHour = $field->price_per_hour; 
+        $peakPricePerHour = $field->peak_price_per_hour; 
+        $endTime = $startDateTime->copy()->addMinutes($duration);
     
-    $startDateTime = Carbon::parse($date . ' ' . $startTime);
-    $field = Field::findOrFail($fieldId);
-    $pricePerHour = $field->price_per_hour; 
-    $peakPricePerHour = $field->peak_price_per_hour; 
-    $endTime = $startDateTime->copy()->addMinutes($duration);
-   
-    // Tính số phút trước và sau 17h
-    $peakHourStart = $startDateTime->copy()->setTime(17, 0); // Mốc 17h
+        // Tính số phút trước và sau 17h
+        $peakHourStart = $startDateTime->copy()->setTime(17, 0); // Mốc 17h
 
-    $minutesBeforePeak = 0;
-    $minutesAfterPeak = 0;
+        $minutesBeforePeak = 0;
+        $minutesAfterPeak = 0;
 
-    if ($endTime <= $peakHourStart) {
-        // Toàn bộ thời gian trước 17h
-        $minutesBeforePeak = $duration;
-    } elseif ($startDateTime >= $peakHourStart) {
-        // Toàn bộ thời gian sau 17h
-        $minutesAfterPeak = $duration;
-    } else {
-        // Thời gian trước và sau 17h
-        $minutesBeforePeak = abs($peakHourStart->diffInMinutes($startDateTime));
-        $minutesAfterPeak = abs($endTime->diffInMinutes($peakHourStart));
+        if ($endTime <= $peakHourStart) {
+            // Toàn bộ thời gian trước 17h
+            $minutesBeforePeak = $duration;
+        } elseif ($startDateTime >= $peakHourStart) {
+            // Toàn bộ thời gian sau 17h
+            $minutesAfterPeak = $duration;
+        } else {
+            // Thời gian trước và sau 17h
+            $minutesBeforePeak = abs($peakHourStart->diffInMinutes($startDateTime));
+            $minutesAfterPeak = abs($endTime->diffInMinutes($peakHourStart));
+        }
+
+        // Tính tổng tiền
+        $totalPrice = 0;
+        $totalPrice += ($minutesBeforePeak / 60) * $pricePerHour; // Giá thường
+        $totalPrice += ($minutesAfterPeak / 60) * $peakPricePerHour; // Giá cao điểm
+
+        $totalPrice = round($totalPrice);
+        // Trả về view xác nhận
+        return view('pages.confirm', 
+        compact('startTime', 'duration',  'field','user','date','totalPrice','note'));
     }
-
-    // Tính tổng tiền
-    $totalPrice = 0;
-    $totalPrice += ($minutesBeforePeak / 60) * $pricePerHour; // Giá thường
-    $totalPrice += ($minutesAfterPeak / 60) * $peakPricePerHour; // Giá cao điểm
-
-    $totalPrice = round($totalPrice);
-    // Trả về view xác nhận
-    return view('pages.confirm', 
-    compact('startTime', 'duration', 'phone', 'email', 'field','name','date','totalPrice','note'));
-}
 
     // Phương thức để lưu thông tin đặt sân
     public function store(Request $request)
@@ -96,35 +96,16 @@ public function confirmReservation(Request $request)
             'field_id' => 'required|integer',
             'start_time' => 'required|string',
             'duration' => 'required|integer',
-            'phone' => 'required|string',
-            'email' => 'required|email',
-            'name' => 'required|string',
+            'user_id' => 'required|integer',
             'totalPrice' => 'required|numeric',
             'date' => 'required|date',
             'note' => 'nullable|string',
         ]);
         $startDateTime = Carbon::parse($validated['date'] . ' ' . $validated['start_time']);
         $duration = Duration::where('duration', $validated['duration'])->first();
-        $user = User::firstOrCreate(
-            ['phone' => $validated['phone']],
-            ['name' => $validated['name'], 'email' => $validated['email']]
-        );
-        if ($user->wasRecentlyCreated === false && $user->email !== $validated['email']) {
-            $fieldOwner = $user->role=='field_owner';
-
-            if ($fieldOwner) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Email phải trùng với email của chủ sân.',
-                ], 400);  
-            }            
-             else {
-            $user->email = $validated['email'];
-            $user->save();
-            }
-        }
+       
         $reservation = new Reservation([
-            'user_id' => $user->id,
+            'user_id' => $validated['user_id'],
             'field_id' => $validated['field_id'],
             'start_time' => $startDateTime,
             'duration_id' => $duration->id,
@@ -133,6 +114,9 @@ public function confirmReservation(Request $request)
             'status' => 'chờ xác nhận',
         ]);
         $reservation->save();
+        $field = Field::findOrFail($reservation->field_id);
+        $field->rental_count += 1;
+        $field->save();
         ActivityLog::create([
             'reservation_id' => $reservation->id,
             'user_id' => $reservation->user_id,

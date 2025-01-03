@@ -21,15 +21,15 @@
                         <tbody>
                             <tr>
                                 <td><strong>Người đặt:</strong></td>
-                                <td>{{ $name }}</td>
+                                <td>{{ $user->name }}</td>
                             </tr>
                             <tr>
                                 <td><strong>Số điện thoại:</strong></td>
-                                <td>{{ $phone }}</td>
+                                <td>{{ $user->phone }}</td>
                             </tr>
                             <tr>
                                 <td><strong>Email:</strong></td>
-                                <td>{{ $email }}</td>
+                                <td>{{ $user->email }}</td>
                             </tr>
                             <tr>
                                 <td><strong>Tên sân:</strong></td>
@@ -69,15 +69,13 @@
                             </tr>
                         </tbody>
                     </table>
-                    <form action="{{ route('reservations.store') }}" method="POST">
+                    <form id="reservationForm" action="{{ route('reservations.store') }}" method="POST">
                         @csrf
                         <!-- Các trường ẩn -->
                         <input type="hidden" name="field_id" value="{{ $field->id }}">
                         <input type="hidden" name="start_time" value="{{ $startTime }}">
                         <input type="hidden" name="duration" value="{{ $duration }}">
-                        <input type="hidden" name="phone" value="{{ $phone }}">
-                        <input type="hidden" name="email" value="{{ $email }}">
-                        <input type="hidden" name="name" value="{{ $name }}">
+                        <input type="hidden" name="user_id" value="{{ $user->id}}">
                         <input type="hidden" name="totalPrice" value="{{ $totalPrice }}">
                         <input type="hidden" name="date" value="{{ $date }}">
                         <input type="hidden" name="note" value="{{ $note }}">

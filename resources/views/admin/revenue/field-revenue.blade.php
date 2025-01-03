@@ -178,3 +178,6 @@
 </script>
 </div>
 @endsection
+@push('scripts')  
+    <script src="{{ asset('js/admin/revenueFilterField.js') }}"></script>
+@endpush

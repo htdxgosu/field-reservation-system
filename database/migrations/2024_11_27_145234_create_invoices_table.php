@@ -13,6 +13,7 @@ return new class extends Migration
 {
     Schema::create('invoices', function (Blueprint $table) {
         $table->id();
+        $table->string('invoice_code')->unique()->nullable(); 
         $table->unsignedBigInteger('reservation_id');  // Khóa ngoại liên kết với bảng reservations
         $table->unsignedBigInteger('user_id');  // Khóa ngoại người dùng
         $table->unsignedBigInteger('field_id');  // Khóa ngoại sân bóng

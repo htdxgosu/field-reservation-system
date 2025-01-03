@@ -18,7 +18,7 @@
             <a class="navbar-brand" href="">Admin Panel</a>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <form action="{{ route('admin.logout') }}" method="POST" class="d-inline">
+                        <form action="{{ route('super.admin.logout') }}" method="POST" class="d-inline">
                             @csrf  <!-- Để bảo vệ khỏi CSRF -->
                             <button type="submit" class="nav-link text-danger bg-transparent border-0">Đăng xuất</button>
                         </form>

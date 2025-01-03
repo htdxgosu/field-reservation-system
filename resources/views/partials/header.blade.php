@@ -61,8 +61,29 @@
                     </div>
                     <a href="{{ route('contact') }}" class="nav-item nav-link {{ request()->is('contact') ? 'active' : '' }}">
                     <i class="fas fa-envelope me-2"></i>Liên hệ</a>
-                    <a href="{{ route('login.login') }}" class="nav-item nav-link ms-3 login-link {{ request()->is('login') ? 'active' : '' }}">
-                    <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập</a>
+                    @if (Auth::check())
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fas fa-user me-2"></i>Chào, <span class="fw-bold text-primary">{{ Auth::user()->name }}</span></a>
+                        <div class="dropdown-menu ms-5">
+                            <!-- Dropdown item -->
+                            <a href="{{ route('changePasswordForm') }}" class="dropdown-item">
+                                <i class="fas fa-key me-4"></i>Đổi mật khẩu
+                            </a>
+                            <a href="javascript:void(0);" class="dropdown-item" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                             <i class="fas fa-sign-out-alt me-4"></i>Đăng xuất
+                            </a>
+                        </div>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                            @csrf
+                        </form>
+                    </div>
+                    @else
+                        <!-- Nếu chưa đăng nhập -->
+                        <a href="{{ route('login.login') }}" class="nav-item nav-link ms-3 login-link {{ request()->is('login') ? 'active' : '' }}">
+                            <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
+                        </a>
+                    @endif
                 </div>
             </div>
         </nav>

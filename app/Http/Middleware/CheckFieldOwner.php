@@ -14,7 +14,10 @@ class CheckFieldOwner
             return $next($request);
         }
         // Nếu không phải admin, chuyển hướng đến trang đăng nhập
-        return redirect()->route('login.login');
+        return redirect()->route('login.login')->with('swal', [
+            'type' => 'warning',  
+            'message' => 'Chức năng này chỉ dành cho tài khoản chủ sân.'
+        ]);
     }
 }
 

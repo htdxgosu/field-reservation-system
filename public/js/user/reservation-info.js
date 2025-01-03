@@ -1,35 +1,5 @@
 
 document.addEventListener('DOMContentLoaded', function () {
-    const logoutButton = document.querySelector('.logout-btn');
-
-    if (logoutButton) {
-        logoutButton.addEventListener('click', function (event) {
-            event.preventDefault(); // Ngăn gửi form mặc định
-
-            // Hiển thị xác nhận với SweetAlert
-            Swal.fire({
-                text: 'Bạn có chắc chắn muốn đăng xuất?',
-                icon: 'warning',
-                showCancelButton: true,
-                cancelButtonText: 'Hủy',
-                confirmButtonText: 'Đăng xuất',
-                customClass: {
-                    title: 'swal-title'  // Gán lớp CSS cho tiêu đề
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Gửi form đăng xuất
-                    const logoutForm = document.getElementById('logout-form');
-                    if (logoutForm) {
-                        logoutForm.submit();
-                    }
-                }
-            });
-        });
-    }
-});
-
-document.addEventListener('DOMContentLoaded', function () {
     const filterButtons = document.querySelectorAll('.filter-btn'); // Nút lọc
     const reservationItems = document.querySelectorAll('.reservation-item'); // Mỗi đơn đặt sân
     const noResultsMessage = document.querySelector('.no-results-message'); // Thông báo không có kết quả

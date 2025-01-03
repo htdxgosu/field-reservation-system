@@ -20,11 +20,8 @@ class CreateReservationsTable extends Migration
             $table->foreignId('field_id')->constrained()->onDelete('cascade');
             // Set start_time mặc định là thời gian hiện tại
             $table->timestamp('start_time')->default(DB::raw('CURRENT_TIMESTAMP'));
-            // Set end_time mặc định là 1 giờ sau start_time
-            $table->timestamp('end_time')->default(DB::raw('DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 1 HOUR)'));
-            
             // Trạng thái bằng tiếng Việt
-            $table->enum('status', ['chờ xác nhận', 'đã xác nhận', 'đã hủy'])->default('chờ xác nhận');
+            $table->enum('status', ['chờ xác nhận', 'đã xác nhận', 'đã hủy','đã thanh toán'])->default('chờ xác nhận');
 
             // Thêm cột ghi chú
             $table->text('note')->nullable();  // Ghi chú có thể để trống

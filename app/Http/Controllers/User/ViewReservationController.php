@@ -15,70 +15,23 @@ use App\Jobs\SendOtpEmail;
 use App\Jobs\SendReservationEmail;
 class ViewReservationController extends Controller
 {
-    public function showForm(Request $request)
+        public function show()
     {
-        $reservations = null; // Mặc định không có lịch sử đặt sân
-        $user = null;         // Mặc định không có người dùng
-    
-        if ($request->isMethod('post')) {
-            // Lấy số điện thoại từ input
-            $phone = $request->input('email_or_phone');
-    
-            // Kiểm tra số điện thoại hợp lệ
-            if (!preg_match('/^0[0-9]{9}$/', $phone)) {
-                session()->flash('swal', [
-                    'type' => 'error',
-                    'message' => 'Số điện thoại không hợp lệ.',
-                ]);
-                return redirect()->route('reservation-form'); // Trả về cùng route
-            }
-    
-            // Lưu số điện thoại vào session
-            session(['phone' => $phone]);
-    
-            // Tìm kiếm người dùng theo số điện thoại
-            $user = User::where('phone', $phone)->first();
-    
-            if (!$user) {
-                session()->flash('swal', [
-                    'type' => 'error',
-                    'message' => "Không tìm thấy người dùng với số điện thoại này.",
-                ]);
-                return redirect()->route('reservation-form'); // Trả về cùng route
-            }
-    
-            // Lấy lịch sử đặt sân theo user_id với phân trang
-            $reservations = Reservation::where('user_id', $user->id)
-                ->orderBy('created_at', 'desc')
-                ->paginate(15);
-    
-            if ($reservations->isEmpty()) {
-                session()->flash('swal', [
-                    'type' => 'info',
-                    'message' => 'Không có lịch sử đặt sân cho số điện thoại này.',
-                ]);
-                return redirect()->route('reservation-form'); // Trả về cùng route
-            }
-        }
-    
-        // Kiểm tra số điện thoại từ session
-        if (session()->has('phone')) {
-            $phone = session('phone');
-            $user = User::where('phone', $phone)->first();
-    
-            if ($user) {
-                $reservations = Reservation::where('user_id', $user->id)
-                    ->orderBy('created_at', 'desc')
-                    ->paginate(15);
-            }
-        }
-    
-        // Trả về view
+        
+        $user = auth()->user();
+
+        // Lấy lịch sử đặt sân của người dùng đã đăng nhập
+        $reservations = Reservation::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+
+        // Trả về view với thông tin người dùng và lịch sử đặt sân
         return view('pages.reservation-info', [
             'reservations' => $reservations,
             'user' => $user,
         ]);
     }
+
     public function updateUser(Request $request)
 {
     // Kiểm tra số điện thoại và email có tồn tại trong cơ sở dữ liệu, ngoại trừ người dùng hiện tại
@@ -148,9 +101,6 @@ class ViewReservationController extends Controller
             $reservation = Reservation::find($reservationId);
             $reservation->status = 'đã xác nhận';
             $reservation->save();
-            $field = Field::findOrFail($reservation->field_id);
-            $field->rental_count += 1;
-            $field->save();
             SendReservationEmail::dispatch($reservation);
             ActivityLog::create([
                 'reservation_id' => $reservation->id,
@@ -159,7 +109,7 @@ class ViewReservationController extends Controller
                 'action' => 'xác nhận đặt', // Hành động là "Xác nhận"
             ]);
             session()->forget(['reservation_id']);  
-            return redirect()->route('reservation-form')->with('swal', [
+            return redirect()->route('reservation-info')->with('swal', [
                 'type' => 'success',  
                 'message' => 'Đơn đặt sân đã được xác nhận thành công!'
             ]);          

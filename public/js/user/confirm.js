@@ -1,11 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const confirmButton = document.querySelector('button[type="submit"]');
-    confirmButton.addEventListener('click', function (e) {
-        const form = document.querySelector('form');
+    const form = document.querySelector('#reservationForm');
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
         const formData = new FormData(form);
-        formData.forEach((value, key) => {
-            console.log(key + ": " + value);
-        });
         fetch(form.action, {
             method: 'POST',
             body: formData,
@@ -42,7 +39,5 @@ document.addEventListener('DOMContentLoaded', function () {
                     showConfirmButton: true,
                 });
             });
-
-        e.preventDefault();
     });
 });

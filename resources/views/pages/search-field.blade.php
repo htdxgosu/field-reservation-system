@@ -86,13 +86,19 @@
                                             </div>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <a href="{{ route('fields.show', $field->id) }}" class="btn btn-warning w-48">
+                                            <a href="{{ route('fields.show', $field->id) }}" class="btn btn-warning btn-sm w-48">
                                                 Chi tiết
                                             </a>
                                     <!-- Nút Đặt sân -->
-                                    <button type="button" class="btn btn-success w-48" data-bs-toggle="modal" data-bs-target="#reserveModal{{ $field->id }}">
-                                        Đặt sân 
-                                    </button>
+                                    @auth
+                                        <button type="button" class="btn btn-success btn-sm w-48" data-bs-toggle="modal" data-bs-target="#reserveModal{{ $field->id }}">
+                                            Đặt sân
+                                        </button>
+                                    @else
+                                        <a href="{{ route('login.login') }}" class="btn btn-secondary btn-sm w-48">
+                                            Đăng nhập để đặt sân
+                                        </a>
+                                    @endauth
                                     </div>
                                     <p class="text-center">Cách vị trí bạn khoảng: {{$field->distance}} km</p>
                                     <div class="text-warning text-end">
@@ -101,7 +107,7 @@
                                     </div>
                                     <!-- Modal Đặt Sân -->
                                     @foreach($fields as $field)
-                                    <div class="modal fade" id="reserveModal{{ $field->id }}" tabindex="-1" 
+                                     <div class="modal fade" id="reserveModal{{ $field->id }}" tabindex="-1" 
                                         aria-labelledby="reserveModalLabel{{ $field->id }}" aria-hidden="true">
                                         <div class="modal-dialog" style="max-width: 400px;">
                                             <div class="modal-content">
@@ -112,17 +118,17 @@
                                                 </div>
                                                 <div class="modal-body">
                                                     <!-- Form Đặt Sân -->
-                                                    <form id="bookingForm{{ $field->id }}" method="POST"
-                                                    action="{{ route('check.time.conflict') }}">
+                                                    <form id="reservationForm{{ $field->id }}" method="POST"
+                                                    action="{{ route('confirm-reservation') }}">
                                                         @csrf
                                                         <!-- Hiển thị ngày đã tìm kiếm (Không cho phép thay đổi) -->
                                                         <div class="mb-2">
                                                             <label for="date{{ $field->id }}" class="form-label"><strong>Ngày thuê sân</strong></label>
-                                                            <input type="text" class="form-control form-control-sm" name="date" id="date{{ $field->id }}" 
+                                                            <input type="text" class="form-control form-control-sm" id="date{{ $field->id }}" 
                                                             value="{{ \Carbon\Carbon::parse($date)->format('d/m/Y') }} " 
                                                             data-date="{{ \Carbon\Carbon::parse($date)->format('d/m/Y') }}" disabled>
                                                         </div>
-
+                                                        <input type="hidden" name="date" value="{{ \Carbon\Carbon::parse($date)->format('d/m/Y') }}">
                                                         <div class="mb-2">
                                                             <label class="form-label"><strong>Giờ bắt đầu</strong></label>
                                                             <select class="form-select" 
@@ -144,7 +150,11 @@
                                                             <option value="">Chọn thời gian đá</option>
                                                             </select>
                                                         </div>
-
+                                                        <div class="mb-2">
+                                                            <label for="note_{{ $field->id }}" class="form-label"><strong>Ghi chú (không bắt buộc)</strong></label>
+                                                            <textarea class="form-control" name="note" id="note_{{ $field->id }}" rows="2"></textarea>
+                                                        </div>
+                                                        <input type="hidden" name="userId" value="{{ Auth::check() ? Auth::user()->id : '' }}">
                                                         <input type="hidden" name="field_id" value="{{ $field->id }}">
                                                         <div class="d-flex justify-content-center mt-4">
                                                             <button type="button" class="btn btn-primary mx-2" data-bs-dismiss="modal">Hủy</button>
@@ -156,75 +166,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <!-- Modal 2: Thông tin cá nhân -->
-                                    <div class="modal fade" id="personalInfoModal{{ $field->id }}" tabindex="-1" 
-                                        aria-labelledby="personalInfoModalLabel{{ $field->id }}" aria-hidden="true">
-                                        <div class="modal-dialog" style="max-width: 400px;">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="personalInfoModalLabel{{ $field->id }}">
-                                                    <i class="fa fa-user m-2"></i>Thông tin cá nhân</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <form id="personalInfoForm{{ $field->id }}" 
-                                                    action="{{ route('confirm-reservation') }}" method="POST">
-                                                        @csrf
-                                                        <div class="mb-3">
-                                                            <label for="name_{{ $field->id }}" class="form-label"><strong>Họ và Tên</strong></label>
-                                                            <input type="text" 
-                                                                class="form-control" 
-                                                                id="name_{{ $field->id }}" 
-                                                                name="name" 
-                                                                placeholder="Nhập tên của bạn" 
-                                                                required>
-                                                        </div>
-                                                        <!-- Nhập số điện thoại -->
-                                                        <div class="mb-3">
-                                                            <label for="phone_{{ $field->id }}" class="form-label"><strong>Số điện thoại</strong>
-                                                            </label>
-                                                            <input type="tel" 
-                                                                class="form-control" 
-                                                                id="phone_{{ $field->id }}" 
-                                                                name="phone" 
-                                                                placeholder="0xxxxxxxxx" 
-                                                                required>
-                                                                <div id="phoneError_{{ $field->id }}" class="text-danger mt-2" style="display:none;">
-                                                                    Số điện thoại không hợp lệ.
-                                                                </div>
-                                                        </div>
-
-                                                        <!-- Nhập email -->
-                                                        <div class="mb-3">
-                                                            <label for="email_{{ $field->id }}" class="form-label"><strong>Email</strong>
-                                                            </label>
-                                                            <input type="email" 
-                                                                class="form-control" 
-                                                                id="email_{{ $field->id }}" 
-                                                                name="email" 
-                                                                placeholder="xxx@gmail.com"
-                                                                required>
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label for="note_{{ $field->id }}" class="form-label"><strong>Ghi chú (không bắt buộc)</strong></label>
-                                                            <textarea class="form-control" name="note" id="note_{{ $field->id }}" rows="2"></textarea>
-                                                        </div>
-                                                        <!-- Trường ẩn để lưu thông tin đặt sân -->
-                                                        <input type="hidden" name="field_id" value="{{ $field->id }}">
-                                                        <input type="hidden" name="date" value="">
-                                                        <input type="hidden" name="start_time" value="">
-                                                        <input type="hidden" name="duration" value="">
-
-                                                        <div class="d-flex justify-content-center mt-4">
-                                                            <button type="button" class="btn btn-secondary mx-2" data-bs-dismiss="modal">Hủy</button>
-                                                            <button type="submit" class="btn btn-success mx-2">Xác nhận</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                     </div>
                                     @endforeach
                                 </div>
                                </div>

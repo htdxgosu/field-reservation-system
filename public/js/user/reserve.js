@@ -83,35 +83,9 @@ document.addEventListener('DOMContentLoaded', function () {
                             showConfirmButton: true,
                         });
                     } else {
-                        // Nếu thông tin hợp lệ, tiếp tục mở Modal 2
-                        const modal2 = document.getElementById(`personalInfoModal${fieldId}`);
-                        if (modal2) {
-
-                            // Gán giá trị vào các input ẩn trong Modal 2
-                            modal2.querySelector('input[name="start_time"]').value = startTime;
-                            modal2.querySelector('input[name="duration"]').value = duration;
-                            modal2.querySelector('input[name="date"]').value = selectedDate;
-                            const bsModal1 = bootstrap.Modal.getInstance(modal1);
-                            bsModal1.hide();
-                            // Mở modal 2
-                            const bsModal = new bootstrap.Modal(modal2);
-                            bsModal.show();
-                            const phoneInput = modal2.querySelector(`#phone_${fieldId}`);
-                            const phoneError = document.getElementById(`phoneError_${fieldId}`);
-
-                            // Kiểm tra số điện thoại khi rời khỏi trường nhập liệu
-                            phoneInput.addEventListener('blur', function () {
-                                const phone = phoneInput.value.trim();
-                                const phoneRegex = /^0[0-9]{9}$/; // Kiểm tra số điện thoại hợp lệ
-                                if (phone === '') {
-                                    phoneError.style.display = 'none';
-                                } else if (!phoneRegex.test(phone)) {
-                                    phoneError.style.display = 'block';
-                                } else {
-                                    phoneError.style.display = 'none';
-                                }
-                            });
-
+                        const form = document.getElementById(`bookingForm${fieldId}`);
+                        if (form) {
+                            form.submit();
                         }
                     }
                 })
@@ -122,53 +96,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         });
     });
-    document.querySelectorAll('.btn-success').forEach(function (button) {
-        button.addEventListener('click', function (event) {
-            event.preventDefault(); // Ngừng gửi form mặc định
 
-            const modal2 = button.closest('.modal');  // Modal 2
-            const fieldId = modal2.id.replace('personalInfoModal', '');
-            const phoneInput = document.querySelector(`#phone_${fieldId}`);
-            const emailInput = document.querySelector(`#email_${fieldId}`);
-            const nameInput = document.querySelector(`#name_${fieldId}`);
-            const phone = phoneInput.value.trim();
-            const email = emailInput.value.trim();
-            const name = nameInput.value.trim();
-            const phoneRegex = /^0[0-9]{9}$/;
-            const emailRegex = /^[a-zA-Z0-9._%+-]{3,}@gmail\.com$/;
-            let isValid = true;
-            let errorMessage = '';
-            if (!name) {
-                errorMessage = "Hãy nhập tên của bạn.";
-                isValid = false;
-            }
-            if (!phone) {
-                errorMessage = "Hãy nhập số điện thoại của bạn.";
-                isValid = false;
-            } else if (!phoneRegex.test(phone)) {
-                errorMessage = "Số điện thoại không hợp lệ.";
-                isValid = false;
-            }
-
-            if (!email) {
-                errorMessage = "Hãy nhập email của bạn.";
-                isValid = false;
-            } else if (!emailRegex.test(email)) {
-                errorMessage = "Email phải có định dạng xxx@gmail.com.";
-                isValid = false;
-            }
-
-            if (!isValid) {
-                Swal.fire({
-                    icon: 'warning',
-                    text: errorMessage,
-                    showConfirmButton: true,
-                });
-            } else {
-                modal2.querySelector('form').submit();
-            }
-        });
-    });
     const modals = document.querySelectorAll('.modal');
     modals.forEach((modal) => {
         modal.addEventListener('hidden.bs.modal', function () {
@@ -192,9 +120,9 @@ document.addEventListener('DOMContentLoaded', function () {
             availableHoursContainers.forEach(container => {
                 container.style.display = 'none'; // Ẩn từng phần tử
             });
-            const name = modal.querySelector('input[name="name"]');
+
             const notes = modal.querySelectorAll('textarea[name="note"]');
-            name.value = '';
+
             notes.forEach((note) => {
                 note.value = '';
             });
@@ -414,3 +342,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 });
+

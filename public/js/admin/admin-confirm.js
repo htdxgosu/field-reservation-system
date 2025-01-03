@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.querySelector('#reservationForm');
-    console.log(form);
     form.addEventListener('submit', function (e) {
         e.preventDefault();
         const formData = new FormData(form);

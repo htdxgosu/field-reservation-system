@@ -28,8 +28,8 @@
                     <label for="location"><strong>Địa điểm</strong> <span class="text-danger">*</span></label>
                     <input type="text" name="location" id="location" class="form-control" value="{{ old('location', $field->location) }}" required>
                 <!-- Input ẩn để lưu tọa độ -->
-                <input type="hidden" id="latitude" name="latitude">
-                <input type="hidden" id="longitude" name="longitude">
+                <input type="hidden" id="latitude" name="latitude" value="{{ old('latitude', $field->latitude) }}">
+                <input type="hidden" id="longitude" name="longitude" value="{{ old('longitude', $field->longitude) }}">
                 </div>
                 <div id="mapModal" style="display: none; position: relative; height: 400px; margin: 20px; border: 1px solid #ccc;">
                 <div id="map" style="height: 100%; width: 100%;"></div>
