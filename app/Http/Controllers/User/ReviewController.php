@@ -19,17 +19,15 @@ class ReviewController extends Controller
             'field_id' => 'required|exists:fields,id', 
             'rating' => 'required|integer|min:1|max:5', 
             'comment' => 'nullable|string|max:500', 
-            'phone' => 'required|regex:/^0\d{9}$/', 
+            'user_id' => 'required|exists:users,id', 
         ]);
 
         // Nếu có lỗi trong việc xác thực, trả lại lỗi
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 400);
         }
-        $user = User::where('phone', $request->phone)->first();
-        if (!$user) {
-            return response()->json(['error' => 'Bạn chưa từng sử dụng sân này sao đánh giá được.'], 400);
-        }
+        $user = User::where('id', $request->user_id)->first();
+       
         $hasPaidOrder = Reservation::where('user_id', $user->id) 
         ->where('field_id', $request->field_id) 
         ->where('status', 'đã thanh toán') 

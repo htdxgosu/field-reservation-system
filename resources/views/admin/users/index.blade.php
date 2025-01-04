@@ -18,10 +18,6 @@
             <button class="btn btn-primary" type="submit">Tìm kiếm</button>
         </div>
     </form>
-   <!-- Nút thêm khách hàng và quay lại -->
-    <div class="mb-3">
-        <a href="{{ route('admin.users.create') }}" class="btn btn-success">Thêm khách hàng</a>
-    </div>
     <!-- Hiển thị thông báo nếu không có kết quả tìm kiếm -->
     @if($noResults)
         <div class="alert alert-warning mt-3 text-center" role="alert">

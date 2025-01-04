@@ -55,12 +55,7 @@ Route::get('/contact', function () {
     return view('pages.contact', ['title' => 'Contact Us']);
 })->name('contact');
 Route::post('/send-contact', [ContactController::class, 'sendContactEmail'])->name('send.contact');
-// 
-Route::get('/register-owner', function () {
-    return view('pages.register-owner', ['title' => 'Register-owner']);
-})->name('register-owner');
-Route::post('/register-owner/register', [RegistrationController::class, 'register'])
-->name('register-owner.register');
+
 // Route để gửi lại OTP
 Route::post('/resend-otp', [RegistrationController::class, 'resendOtp'])->name('resendOtp');
 Route::post('/resend-otp-reserve', [ViewReservationController::class, 'resendOtpReserve'])->name('resendOtpReserve');
@@ -144,7 +139,12 @@ Route::middleware([CheckLoggedIn::class])->group(function () {
     Route::post('/change-password', [LoginAuthController::class, 'changePassword'])->name('updatePassword');
     // Trang Yêu cầu đặt sân
     Route::get('/reservation-info', [ViewReservationController::class, 'show'])->name('reservation-info');
-   
+   // Trang Đăng ký chủ sân
+    Route::get('/register-owner', function () {
+        return view('pages.register-owner', ['title' => 'Register-owner']);
+    })->name('register-owner');
+    Route::post('/register-owner/register', [RegistrationController::class, 'register'])
+    ->name('register-owner.register');
 
 });
 
@@ -162,8 +162,6 @@ Route::middleware([CheckFieldOwner::class])->prefix('admin')->group(function () 
     Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
     Route::post('/users/{id}/update', [UserController::class, 'update'])->name('admin.users.update');
     Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('admin.users.destroy');
-    Route::get('/users/create', [UserController::class, 'create'])->name('admin.users.create');
-    Route::post('/users', [UserController::class, 'store'])->name('admin.users.store');
     //
     Route::post('/reviews/{review}/reply', [ReviewController::class, 'reply'])->name('reviews.reply');
     Route::delete('/reviews/{review}/reply', [ReviewController::class, 'deleteReply'])->name('reviews.delete_reply');

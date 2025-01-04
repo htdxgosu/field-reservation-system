@@ -19,18 +19,14 @@
                 <label for="confirmPassword" class="form-label"><strong>Xác nhận mật khẩu mới</strong> <span class="text-danger">*</span></label>
                 <input type="password" class="form-control" id="confirmPassword" name="newPassword_confirmation" required>
             </div>
+            @if ($errors->any())
+                <div class="mt-3 error-message text-danger text-center">
+                    {{ $errors->first() }}
+                </div>
+            @endif
             <div class="d-flex justify-content-end">
                 <button type="submit" class="btn btn-primary">Lưu</button>
             </div>
-            @if ($errors->any())
-                <div class="mt-3 error-message text-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
         </form>
     </div>
 </div>

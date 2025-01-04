@@ -18,11 +18,10 @@ class RegistrationController extends Controller
     {
         // Validate dữ liệu đầu vào
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:50',
             'phone' => ['required', 'regex:/^0[0-9]{9}$/'],
             'email' => 'required|email',
-            'address' => '',
-            'password' => 'required|min:8|confirmed',
+            'address' => 'required|string|max:255',
             'identity' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'business_license' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ], [
@@ -57,7 +56,6 @@ class RegistrationController extends Controller
             'phone' => $request->phone,
             'email' => $request->email,
             'address' => $request->address,
-            'password' => $request->password, 
             'identity' => $identityPath,
             'business_license' => $businessLicensePath,
         ],
@@ -81,11 +79,15 @@ class RegistrationController extends Controller
         if ($otpCode == $storedOtp) {
             session()->forget(['otp_code', 'otp_expires_at']);  // Xóa OTP khỏi session
             $existingUser = User::where('phone', $registrationData['phone'])->first();
-            if ($existingUser) {
-            $existingUser->name = $registrationData['name'];
-            $existingUser->email =  $registrationData['email'];
-            $existingUser->password = $registrationData['password'];
-            $existingUser->save();
+           
+            $updatedFields = array_filter([
+                'name' => $registrationData['name'] !== $existingUser->name ? $registrationData['name'] : null,
+                'email' => $registrationData['email'] !== $existingUser->email ? $registrationData['email'] : null,
+            ]);
+        
+            if (!empty($updatedFields)) {
+                $existingUser->update($updatedFields);
+            }
             FieldOwner::create([
                 'user_id' => $existingUser->id,
                 'address' => $registrationData['address'],
@@ -97,27 +99,8 @@ class RegistrationController extends Controller
             session()->forget('registration_data');
             session()->flash('success', 'Gửi yêu cầu thành công, vui lòng chờ thông báo kết quả đến email của bạn!');
             return redirect()->route('home');            
+             
         }
-        
-            $user = User::create([
-                'name' => $registrationData['name'],
-                'phone' => $registrationData['phone'],
-                'email' =>$registrationData['email'],
-                'password' =>$registrationData['password'],
-            ]);
-                FieldOwner::create([
-                'user_id' => $user->id,
-                'address' => $registrationData['address'],
-                'identity' => $registrationData['identity'],
-                'business_license' => $registrationData['business_license'],
-                'status' => 'pending',  
-            ]);
-            SendAdminNotificationEmail::dispatch($registrationData['name']);
-            session()->forget('registration_data');
-            session()->flash('success', 'Gửi yêu cầu thành công, vui lòng chờ thông báo kết quả đến email của bạn!');
-            return redirect()->route('home');            
-        }
-
         return redirect()->route('verify.otp')->withErrors(['otp' => 'Mã OTP không chính xác.']);
     }
     public function resendOtp()
@@ -136,7 +119,7 @@ class RegistrationController extends Controller
                 'message' => 'OTP mới đã được gửi đến email của bạn.'
             ]);
         } else {
-            return redirect()->route('verify.otp')->withErrors(['otp' => 'Đã có lỗi, hay đăng kí lại.']);
+            return redirect()->route('verify.otp')->withErrors(['otp' => 'Đã có lỗi, hãy đăng kí lại.']);
         }
     }
 

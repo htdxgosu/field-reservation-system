@@ -284,8 +284,6 @@ public function printInvoice($id)
         $startTime = $request->input('start_time');
         $duration = intval($request->input('duration'));
         $phone = $request->input('phone');
-        $email = $request->input('email');
-        $name = $request->input('name');
         $note = $request->input('note');
         $fieldId = $request->input('field_id');
         
@@ -294,6 +292,15 @@ public function printInvoice($id)
         $pricePerHour = $field->price_per_hour; 
         $peakPricePerHour = $field->peak_price_per_hour; 
         $endTime = $startDateTime->copy()->addMinutes($duration);
+
+        $user = User::where('phone', $phone)->first();
+        if ($user) {
+           $name = $user->name;
+           $email = $user->email;
+        } else {
+            $name = '';
+            $email = '';
+        }
     
         // Tính số phút trước và sau 17h
         $peakHourStart = $startDateTime->copy()->setTime(17, 0); // Mốc 17h
@@ -321,7 +328,7 @@ public function printInvoice($id)
         $totalPrice = round($totalPrice);
         // Trả về view xác nhận
         return view('admin.reservations.confirm', 
-        compact('startTime', 'duration', 'phone', 'email', 'field','name','date','totalPrice','note'));
+        compact('startTime', 'duration','name','email','phone', 'field','date','totalPrice','note'));
     }
     public function store(Request $request)
     {
@@ -340,22 +347,9 @@ public function printInvoice($id)
         $duration = Duration::where('duration', $validated['duration'])->first();
         $user = User::firstOrCreate(
             ['phone' => $validated['phone']],
-            ['name' => $validated['name'], 'email' => $validated['email']]
+            ['name' => $validated['name'], 'email' => $validated['email'],'password' => bcrypt('12345678')]
         );
-        if ($user->wasRecentlyCreated === false && $user->email !== $validated['email']) {
-            $fieldOwner = $user->role=='field_owner';
-
-            if ($fieldOwner) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Email phải trùng với email của chủ sân.',
-                ], 400);  
-            }            
-             else {
-            $user->email = $validated['email'];
-            $user->save();
-            }
-        }
+       
         $reservation = new Reservation([
             'user_id' => $user->id,
             'field_id' => $validated['field_id'],

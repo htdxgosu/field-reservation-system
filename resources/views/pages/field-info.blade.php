@@ -258,7 +258,7 @@
                         </span>
                         <p class="small">{{ $review->comment }}</p>
                         <p class="custom-small-text text-end">{{ \Carbon\Carbon::parse($review->created_at)->format('d/m/Y') }}</p>
-                        @if(session('phone') === $review->user->phone)
+                        @if(Auth::check() && Auth::user()->id === $review->user->id)
                             <div class="text-end">
                                 <button type="button" class="btn btn-danger btn-sm mb-2" onclick="window.deleteReview('{{ $review->id }}')">Xóa đánh giá</button>
                             </div>
@@ -277,9 +277,15 @@
                 </div>
                 <div class="row">
                 <div class="text-end">
-                        <button type="button" class="btn btn-secondary" id="writeCommentBtn" data-bs-toggle="modal" data-bs-target="#ratingModal">
-                        Đánh giá
-                    </button>
+                    @if(Auth::check())
+                        <!-- Hiển thị nút Đánh giá nếu người dùng đã đăng nhập -->
+                        <button type="button" class="btn btn-secondary btn-sm" id="writeCommentBtn" data-bs-toggle="modal" data-bs-target="#ratingModal">
+                            Đánh giá
+                        </button>
+                    @else
+                        <!-- Hiển thị nút Đăng nhập nếu người dùng chưa đăng nhập -->
+                        <a href="{{ route('login.login') }}" class="btn btn-primary btn-sm">Đăng nhập để đánh giá</a>
+                    @endif
                 </div>
                     <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
                         <div class="modal-dialog" style="max-width:400px;top:20%">
@@ -315,13 +321,7 @@
                                 </div>
                                 <div class="modal-body">
                                     <input type="hidden" id="fieldId" value="{{ $field->id }}">
-                                    <!-- Trường nhập Số điện thoại -->
-                                    <div class="mb-3">
-                                        <input type="tel" class="form-control" id="phoneInput" placeholder="Số điện thoại (bắt buộc)" required>
-                                        <div id="phoneError" class="text-danger mt-2" style="display:none;">
-                                            Số điện thoại không hợp lệ.
-                                        </div>
-                                    </div>
+                                    <input type="hidden" id="userID" value="{{ Auth::check() ? Auth::user()->id : '' }}">
                                     <textarea class="form-control" rows="4" id="commentInput" name="commentInput"
                                      placeholder="Mời bạn chia sẻ cảm nhận..."></textarea>
                                 </div>

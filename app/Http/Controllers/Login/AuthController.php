@@ -81,7 +81,7 @@ class AuthController extends Controller
                 'name' => 'required|string|max:255',
                 'phone' => 'required|string|max:15|unique:users',
                 'email' => 'required|email',
-                'password' => 'required|string|min:6|confirmed',
+                'password' => 'required|string|min:8|confirmed',
             ], [
                 'phone.unique' => 'Số điện thoại đã tồn tại.'
             ]);
@@ -109,13 +109,13 @@ class AuthController extends Controller
     }
     public function changePassword(Request $request)
     {
-        Log::info('Dữ liệu yêu cầu đổi mật khẩu: ', $request->all());
+       
         // Validate các trường nhập liệu
         $validator = Validator::make($request->all(), [
             'currentPassword' => 'required',
-            'newPassword' => 'required|min:6|confirmed',
+            'newPassword' => 'required|min:8|confirmed',
         ], [
-            'newPassword.min' => 'Mật khẩu ít nhất 6 kí tự.',
+            'newPassword.min' => 'Mật khẩu mới phải ít nhất 8 kí tự.',
             'newPassword.confirmed' => 'Mật khẩu mới không khớp.',
         ]);
 

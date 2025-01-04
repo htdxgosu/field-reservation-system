@@ -57,6 +57,6 @@ class RequestController extends Controller
             SendRejectFieldOwnerRequestEmail::dispatch($request->user);
         }
     
-        return redirect()->back()->with('error', 'Yêu cầu đã bị từ chối và đã gửi email thông báo.');
+        return redirect()->back()->with('success', 'Yêu cầu đã bị từ chối và đã gửi email thông báo.');
     }
 }

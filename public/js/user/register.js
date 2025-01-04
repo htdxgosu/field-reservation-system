@@ -11,9 +11,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const passwordStrengthStatus = checkPasswordStrength(password);
         if (password.length === 0) {
             passwordStrength.style.display = 'none';
-        } else if (password.length < 6) {
+        } else if (password.length < 8) {
             passwordStrength.style.display = 'block';
-            passwordStrength.textContent = 'Mật khẩu quá yếu';
+            passwordStrength.textContent = 'Mật khẩu quá yếu, phải ít nhất 8 kí tự!';
             passwordStrength.style.color = 'red';
         } else if (passwordStrengthStatus.percent <= 40) {
             passwordStrength.style.display = 'block';
@@ -56,10 +56,10 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             return;
         }
-        if (password.length < 6) {
+        if (password.length < 8) {
             Swal.fire({
                 icon: 'error',
-                text: 'Mật khẩu phải có ít nhất 6 ký tự.',
+                text: 'Mật khẩu phải có ít nhất 8 ký tự.',
             });
             return;
         }
@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (password !== passwordConfirmation) {
             Swal.fire({
                 icon: 'error',
-                text: 'Mật khẩu và mật khẩu xác nhận không khớp.',
+                text: 'Mật khẩu xác nhận không trùng khớp.',
             });
             return;
         }
@@ -110,8 +110,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function checkPasswordStrength(password) {
         let score = 0;
 
-        // Kiểm tra độ dài mật khẩu tối thiểu 6 ký tự
-        if (password.length >= 6) score += 20;
+        if (password.length >= 8) score += 20;
 
         // Kiểm tra các thành phần trong mật khẩu
         if (/[a-z]/.test(password)) score += 10; // Chứa ít nhất một chữ cái thường

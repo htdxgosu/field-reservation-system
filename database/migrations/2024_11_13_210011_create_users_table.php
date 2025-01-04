@@ -18,7 +18,7 @@ class CreateUsersTable extends Migration
             $table->string('name');  // Tạo cột name
             $table->string('phone', 10)->unique();  // Tạo cột phone, giới hạn 10 ký tự và duy nhất
             $table->string('email');  // Tạo cột email
-            $table->string('password')->nullable();  // Thêm cột password
+            $table->string('password')->default('12345678');
             $table->enum('role', ['customer', 'field_owner'])->default('customer');
             $table->timestamps();  // Tạo cột created_at và updated_at
         });

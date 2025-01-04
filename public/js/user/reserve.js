@@ -185,9 +185,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const ratingModal = document.getElementById("ratingModal");
     const commentInput = document.getElementById("commentInput");
     const commentModal = document.getElementById("commentModal");
-    const phoneError = document.getElementById("phoneError");
     const submitBtns = document.querySelectorAll(".submit-rating");
-    const phoneInput = document.getElementById("phoneInput");
     let selectedRating = 0;
     ratingModal.addEventListener("hidden.bs.modal", function () {
         resetModal();
@@ -231,72 +229,49 @@ document.addEventListener('DOMContentLoaded', function () {
             commentModal.show(); // Hiển thị modal viết bình luận
         }
     });
-    phoneInput.addEventListener("blur", function () {
-        checkPhoneNumber(phoneInput.value);
-    });
-    function checkPhoneNumber(phone) {
-        if (phone === "") {
-            phoneError.style.display = "none";
-        } else {
-            const phoneRegex = /^0\d{9}$/;
-            if (phoneRegex.test(phone)) {
-                phoneError.style.display = "none";
-            } else {
-                phoneError.style.display = "block";
-
-            }
-        }
-    }
     submitBtns.forEach(btn => {
         btn.addEventListener("click", function () {
-            if (phoneInput.value === "" || phoneError.style.display === "block") {
-                Swal.fire({
-                    icon: 'error',
-                    text: 'Vui lòng nhập số điện thoại hợp lệ.',
-                });
-            }
-            else {
-                const fieldId = document.getElementById('fieldId').value;
-                const reviewData = {
-                    field_id: fieldId,
-                    rating: selectedRating,
-                    comment: commentInput.value,
-                    phone: phoneInput.value,
-                };
-                fetch('/submit-review', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify(reviewData)
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                text: 'Đánh giá thành công!',
-                            }).then(() => {
-                                const commentModalInstance = bootstrap.Modal.getInstance(document.getElementById("commentModal"));
-                                commentModalInstance.hide();
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                text: data.error,
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Lỗi gửi đánh giá:', error);
+            const fieldId = document.getElementById('fieldId').value;
+            const userID = document.getElementById("userID").value;
+            const reviewData = {
+                field_id: fieldId,
+                user_id: userID,
+                rating: selectedRating,
+                comment: commentInput.value,
+            };
+            fetch('/submit-review', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify(reviewData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            text: 'Đánh giá thành công!',
+                        }).then(() => {
+                            const commentModalInstance = bootstrap.Modal.getInstance(document.getElementById("commentModal"));
+                            commentModalInstance.hide();
+                            location.reload();
+                        });
+                    } else {
                         Swal.fire({
                             icon: 'error',
-                            text: 'Đã có lỗi xảy ra. Vui lòng thử lại.',
+                            text: data.error,
                         });
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi gửi đánh giá:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        text: 'Đã có lỗi xảy ra. Vui lòng thử lại.',
                     });
-            }
+                });
         });
     });
     window.deleteReview = function (reviewId) {

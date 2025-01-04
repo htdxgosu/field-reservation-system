@@ -6,9 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Notifications\Notifiable;
 class User extends  Authenticatable
 {
-    use HasFactory;
+    use HasFactory,Notifiable;
 
     // Các trường có thể mass-assign (được điền vào trong hàm create hoặc update)
     protected $fillable = [

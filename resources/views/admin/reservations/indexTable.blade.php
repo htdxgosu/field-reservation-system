@@ -59,16 +59,16 @@
                     </div>
                     <div class="modal-body">
                      <form id="bookingForm{{ $field->id }}" method="POST"
-                        action="{{ route('check.time.conflict') }}">
+                        action="{{ route('confirm-reservation-admin') }}">
                             @csrf
                             <!-- Hiển thị ngày đã tìm kiếm (Không cho phép thay đổi) -->
                             <div class="mb-2">
                                 <label for="date{{ $field->id }}" class="form-label"><strong>Ngày thuê sân</strong></label>
-                                <input type="text" class="form-control form-control-sm" name="date" id="date{{ $field->id }}" 
+                                <input type="text" class="form-control form-control-sm" id="date{{ $field->id }}" 
                                 value="{{$dateFormatted}}" 
                                 data-date="{{$dateFormatted}}" disabled>
                             </div>
-
+                            <input type="hidden" name="date" value="{{$dateFormatted}}">
                             <div class="mb-2">
                                 <label class="form-label"><strong>Giờ bắt đầu</strong></label>
                                 <select class="form-select" 
@@ -90,43 +90,6 @@
                                 <option value="">Chọn thời gian đá</option>
                                 </select>
                             </div>
-
-                            <input type="hidden" name="field_id" value="{{ $field->id }}">
-                            <div class="d-flex justify-content-center mt-4">
-                                <button type="button" class="btn btn-primary mx-2" data-bs-dismiss="modal">Hủy</button>
-                                <button type="button" class="btn btn-success mx-2 continue-btn">
-                                    Tiếp tục
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Modal 2: Thông tin cá nhân -->
-        <div class="modal fade" id="personalInfoModal{{ $field->id }}" tabindex="-1" 
-            aria-labelledby="personalInfoModalLabel{{ $field->id }}" aria-hidden="true">
-            <div class="modal-dialog" style="max-width: 400px;">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="personalInfoModalLabel{{ $field->id }}">
-                        <i class="fa fa-user m-2"></i>Thông tin cá nhân</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="personalInfoForm{{ $field->id }}" 
-                        action="{{ route('confirm-reservation-admin') }}" method="POST">
-                            @csrf
-                            <div class="mb-3">
-                                <label for="name_{{ $field->id }}" class="form-label"><strong>Họ và Tên</strong></label>
-                                <input type="text" 
-                                    class="form-control" 
-                                    id="name_{{ $field->id }}" 
-                                    name="name" 
-                                    placeholder="Nhập tên của bạn" 
-                                    required>
-                            </div>
-                            <!-- Nhập số điện thoại -->
                             <div class="mb-3">
                                 <label for="phone_{{ $field->id }}" class="form-label"><strong>Số điện thoại</strong>
                                 </label>
@@ -134,37 +97,22 @@
                                     class="form-control" 
                                     id="phone_{{ $field->id }}" 
                                     name="phone" 
-                                    placeholder="0xxxxxxxxx" 
                                     required>
                                     <div id="phoneError_{{ $field->id }}" class="text-danger mt-2" style="display:none;">
                                         Số điện thoại không hợp lệ.
                                     </div>
                             </div>
-
-                            <!-- Nhập email -->
-                            <div class="mb-3">
-                                <label for="email_{{ $field->id }}" class="form-label"><strong>Email</strong>
-                                </label>
-                                <input type="email" 
-                                    class="form-control" 
-                                    id="email_{{ $field->id }}" 
-                                    name="email" 
-                                    placeholder="xxx@gmail.com"
-                                    required>
-                            </div>
                             <div class="mb-3">
                                 <label for="note_{{ $field->id }}" class="form-label"><strong>Ghi chú (không bắt buộc)</strong></label>
                                 <textarea class="form-control" name="note" id="note_{{ $field->id }}" rows="2"></textarea>
                             </div>
-                            <!-- Trường ẩn để lưu thông tin đặt sân -->
-                            <input type="hidden" name="field_id" value="{{ $field->id }}">
-                            <input type="hidden" name="date" value="">
-                            <input type="hidden" name="start_time" value="">
-                            <input type="hidden" name="duration" value="">
 
+                            <input type="hidden" name="field_id" value="{{ $field->id }}">
                             <div class="d-flex justify-content-center mt-4">
-                                <button type="button" class="btn btn-secondary mx-2" data-bs-dismiss="modal">Hủy</button>
-                                <button type="submit" class="btn btn-success mx-2">Xác nhận</button>
+                                <button type="button" class="btn btn-primary mx-2" data-bs-dismiss="modal">Hủy</button>
+                                <button type="button" class="btn btn-success mx-2 continue-btn">
+                                    Tiếp tục
+                                </button>
                             </div>
                         </form>
                     </div>
