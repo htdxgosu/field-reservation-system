@@ -225,6 +225,7 @@ public function printInvoice($id)
                 // Lấy các đặt sân cho mỗi sân theo ngày
                 $reservations = Reservation::where('field_id', $field->id)
                                             ->whereDate('start_time', $date)
+                                            ->where('status', '!=', 'đã hủy') 
                                             ->orderBy('start_time', 'asc')
                                             ->get();
 

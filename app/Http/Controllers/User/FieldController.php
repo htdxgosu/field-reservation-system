@@ -98,7 +98,8 @@ class FieldController extends Controller
     foreach ($fields as $field) {
         $availableStartTimes = $field->getAvailableStartTimes(); 
         $reservations = Reservation::where('field_id', $field->id)
-        ->whereDate('start_time', $date) // Chỉ lấy đơn đặt trong ngày đã chọn
+        ->whereDate('start_time', $date)
+        ->where('status', '!=', 'đã hủy') // Chỉ lấy đơn đặt trong ngày đã chọn
         ->orderBy('start_time', 'asc')  // Sắp xếp theo giờ bắt đầu
         ->get();
     

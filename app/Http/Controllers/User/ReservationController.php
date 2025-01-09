@@ -27,6 +27,7 @@ class ReservationController extends Controller
         ->when($reservationId, function ($query) use ($reservationId) {
             $query->where('id', '!=', $reservationId);
         })
+        ->where('status', '!=', 'đã hủy')
         ->get();
 
     $conflict = false;
@@ -133,21 +134,20 @@ class ReservationController extends Controller
         $fieldId = $request->input('field_id'); 
         $date = $request->input('date'); 
         $date = Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
-        Log::info('Received date: ' . $date);
         // Lấy sân theo ID
         $field = Field::findOrFail($fieldId);
         $reservations = Reservation::where('field_id', $fieldId)
             ->whereDate('start_time', $date) 
+            ->where('status', '!=', 'đã hủy') 
             ->orderBy('start_time', 'asc') 
             ->get();
-            Log::info('Reservations found: ', [$reservations->toArray()]);
+           
         $availableHours = [];
     
         // Xác định giờ mở và đóng cửa
         $startOfDay = Carbon::parse($date . ' ' . $field->opening_time);
         $endOfDay = Carbon::parse($date . ' ' . $field->closing_time);
-        Log::info('Start of day: ' . $startOfDay->toTimeString());
-        Log::info('End of day: ' . $endOfDay->toTimeString());
+
         // Kiểm tra giờ trống trước khi có đơn đặt sân
         $lastEndTime = $startOfDay;
     

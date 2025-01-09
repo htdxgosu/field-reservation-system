@@ -61,9 +61,11 @@ class Field extends Model
     {
         // Lấy danh sách các đơn đặt sân cho ngày đã chọn
         $reservations = Reservation::where('field_id', $this->id) // Lọc theo sân hiện tại
-            ->whereDate('start_time', $date)  // Lọc theo ngày
-            ->orderBy('start_time', 'asc')  // Sắp xếp theo giờ bắt đầu
-            ->get();
+        ->whereDate('start_time', $date)  // Lọc theo ngày
+        ->where('status', '!=', 'đã hủy') // Trừ các đơn đã hủy
+        ->orderBy('start_time', 'asc')  // Sắp xếp theo giờ bắt đầu
+        ->get();
+    
         
         // Xác định giờ mở và đóng cửa
         $startOfDay = Carbon::parse($date . ' ' . $this->opening_time);
