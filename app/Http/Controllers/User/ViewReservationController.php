@@ -158,5 +158,11 @@ class ViewReservationController extends Controller
                 'message' => 'Hủy yêu cầu thành công.'
             ]);
     }
-
+    public function printInvoice($id)
+    {
+        $reservation = Reservation::findOrFail($id);
+        $reservation->end_time = $reservation->calculateEndTime(); 
+    
+        return view('pages.invoice', compact('reservation'));
+    }
 }

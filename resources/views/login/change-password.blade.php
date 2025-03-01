@@ -3,7 +3,7 @@
 @section('title', 'Đổi mật khẩu')
 
 @section('content')
-<div class="container d-flex justify-content-center align-items-center py-3">
+<div class="container d-flex justify-content-center align-items-center py-5">
     <div class="card shadow-lg" style="max-width: 400px; width: 100%; padding: 20px;">
         <form action="{{ route('updatePassword') }}" method="POST">
             @csrf

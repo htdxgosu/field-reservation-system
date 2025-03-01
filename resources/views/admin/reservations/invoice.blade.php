@@ -16,7 +16,7 @@
         <div class="text-center mt-2">
                 <h4>HÓA ĐƠN</h4>
                 <p><strong>Mã hóa đơn:</strong> {{ $reservation->invoice->invoice_code }}</p>
-                <p><strong>Ngày lập:</strong> {{ now()->format('d/m/Y H:i') }}</p>
+                <p><strong>Ngày lập:</strong> {{ $reservation->invoice->created_at->format('d/m/Y H:i') }}</p>
             </div>
         <hr>
 

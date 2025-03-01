@@ -153,7 +153,7 @@
                                                     Chi tiết
                                                 </button>
                                                 <!-- Nút Hủy yêu cầu -->
-                                                <button type="button" class="btn btn-primary btn-sm mx-2"
+                                                <button type="button" class="btn btn-primary btn-sm"
                                                 onclick="return cancelReservation('{{ $reservation->id }}')">
                                                     Hủy đặt 
                                                 </button>
@@ -169,18 +169,18 @@
                                                     Chi tiết
                                                 </button>
                                                 @elseif($reservation->status ==='đã xác nhận')
-                                        
+                                               <!--
                                                 <form action="{{ route('payment.create') }}" method="GET" style="display:inline-block;">
                                                     <input type="hidden" name="amount" value="{{ $reservation->total_amount }}">
                                                     <input type="hidden" name="reservation_id" value="{{ $reservation->id }}">
                                                     <button type="submit" class="btn btn-warning btn-sm mx-2">Thanh toán</button>
                                                 </form>
-
+                                                -->
                                                 <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#inforModal_{{ $reservation->id }}" data-reservation-id="{{ $reservation->id }}">
                                                     Chi tiết
                                                 </button>
                                                 @else
-                                                    <button type="button" class="btn btn-success btn-sm mx-2" 
+                                                    <button type="button" class="btn btn-success btn-sm" 
                                                     data-bs-toggle="modal" data-bs-target="#ratingModal_{{ $reservation->id }}"
                                                     onclick="handleRating('{{ $reservation->id }}')">
                                                         Đánh giá
@@ -188,6 +188,7 @@
                                                     <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#inforModal_{{ $reservation->id }}" data-reservation-id="{{ $reservation->id }}">
                                                         Chi tiết
                                                     </button>
+                                                    <a href="{{ route('reservation.invoice', $reservation->id) }}" class="btn btn-secondary btn-sm">Xem hóa đơn</a>
                                                 @endif
                                             @endif
                                         </td>

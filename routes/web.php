@@ -117,6 +117,7 @@ Route::delete('/cancel-reservation/{reservation}', [ViewReservationController::c
 Route::put('/reservation-info/updateUser', [ViewReservationController::class, 'updateUser'])->name('user.update');
 // web.php
 Route::put('/reservation/{reservation}/confirm', [ViewReservationController::class, 'confirm'])->name('reservation.confirm');
+Route::get('/reservation-info/{id}/invoice', [ViewReservationController::class, 'printInvoice'])->name('reservation.invoice');
 //
 Route::match(['get', 'post'], '/webhook', [WebhookController::class, 'handleWebhook']);
 // Route đăng nhập admin

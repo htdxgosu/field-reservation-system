@@ -53,8 +53,11 @@
                         <div class="dropdown-menu m-0">
                             <a href="{{ route('reservation-info') }}" class="dropdown-item">
                             <i class="fas fa-calendar-check me-4"></i>Lịch sử đặt sân</a>
-                            <a href="{{ route('register-owner') }}" class="dropdown-item">
-                            <i class="fas fa-user-plus me-3"></i>Đăng ký chủ sân</a>
+                            @unless(auth()->user() && auth()->user()->role === 'field_owner')
+                                <a href="{{ route('register-owner') }}" class="dropdown-item">
+                                    <i class="fas fa-user-plus me-3"></i>Đăng ký chủ sân
+                                </a>
+                            @endunless
                             <a href="{{ route('terms-of-service') }}" class="dropdown-item">
                             <i class="fas fa-file-alt me-4"></i>Điều khoản & Dịch vụ</a>
                         </div>
