@@ -17,14 +17,19 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 class FieldController extends Controller
 {
-    public function showIndex()
+    public function showIndex(Request $request)
     {
         $fieldTypes = FieldType::all();
+        $latitude = $request->query('latitude');
+        $longitude = $request->query('longitude');
 
         $fields = Field::where('availability', '!=', 'Đang bảo trì')->get();
         foreach ($fields as $field) {
             $averageRating = $field->reviews->avg('rating'); 
-            $field->average_rating = $averageRating ?: 0;    
+            $field->average_rating = $averageRating ?: 0;   
+            $availableStartTimes = $field->getAvailableStartTimes(); 
+            $field->availableStartTimes = $availableStartTimes; 
+            $field->distance = $field->calculateDistance($latitude, $longitude);  
         }
        
         $latestReviews = Review::where('rating', '>=', 4)
@@ -43,6 +48,7 @@ class FieldController extends Controller
         $topRentedFields = Field::getMostRentedFields();
         $topFieldsThisMonth = Field::topFieldsThisMonth();
         $latestNews = News::orderBy('created_at', 'desc')->take(3)->get();
+        $fields = $fields->sortBy('distance');
         return view('pages.index', compact('fieldTypes','fields','latestReviews','topFields',
                                                 'topRentedFields','topFieldsThisMonth','latestNews')); 
                                                 }
@@ -146,30 +152,29 @@ class FieldController extends Controller
     
     return view('pages.search-field', compact('fields', 'date', 'durations'));
 }
-public function getAvailableDurations(Request $request)
-{
-    $fieldId = $request->input('field_id'); 
-    $startTime = $request->input('start_time'); 
+    public function getAvailableDurations(Request $request)
+    {
+        $fieldId = $request->input('field_id'); 
+        $startTime = $request->input('start_time'); 
 
-    $field = Field::find($fieldId);
-    if (!$field) {
-        return response()->json(['error' => 'Field not found'], 404);
+        $field = Field::find($fieldId);
+        if (!$field) {
+            return response()->json(['error' => 'Field not found'], 404);
+        }
+        $closingTime = Carbon::parse($field->closing_time);
+        $start = Carbon::parse($startTime); 
+
+        $remainingMinutes = abs($closingTime->diffInMinutes($start)); 
+        Log::info($remainingMinutes);
+
+        if ($remainingMinutes <= 0) {
+            return response()->json(['availableDurations' => []]);
+        }
+
+        $durations = Duration::all()->filter(function ($duration) use ($remainingMinutes) {
+            return $duration->duration <= $remainingMinutes; // Thời lượng phải nhỏ hơn hoặc bằng thời gian còn lại
+        });
+        
+        return response()->json(['availableDurations' => $durations->pluck('duration')]);
     }
-    $closingTime = Carbon::parse($field->closing_time);
-    $start = Carbon::parse($startTime); 
-
-    $remainingMinutes = abs($closingTime->diffInMinutes($start)); 
-    Log::info($remainingMinutes);
-
-    if ($remainingMinutes <= 0) {
-        return response()->json(['availableDurations' => []]);
-    }
-
-    $durations = Duration::all()->filter(function ($duration) use ($remainingMinutes) {
-        return $duration->duration <= $remainingMinutes; // Thời lượng phải nhỏ hơn hoặc bằng thời gian còn lại
-    });
-    
-    return response()->json(['availableDurations' => $durations->pluck('duration')]);
-}
-
 }

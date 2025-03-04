@@ -207,7 +207,7 @@
                                                         @endif
                                                     </p>
                                                     <p><strong>Ghi chú: </strong>{{ $reservation->note ?? 'Không có ghi chú' }}</p>
-                                                    <p><strong>Thời gian đặt: </strong>{{ \Carbon\Carbon::parse($reservation->created_at)->format('d/m/Y H:m:s') }}</p>
+                                                    <p><strong>Thời gian đặt: </strong>{{ \Carbon\Carbon::parse($reservation->created_at)->format('d/m/Y H:i:s') }}</p>
                                                     <hr>
                                                     <p><strong>Tổng tiền: <span class="text-danger">{{ number_format($reservation->total_amount, 0, ',', '.') }}đ</span></strong></p>
                                                 </div>

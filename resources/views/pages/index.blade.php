@@ -138,12 +138,25 @@
                         <p class="mb-3 d-flex justify-content-between">
                             <strong>Giá sau 17h:</strong> <span class="text-danger fw-bold">{{ $field->formatted_peak_price_per_hour }}</span>
                         </p>
-                        <div class="d-flex justify-content-center align-items-center">
+                        <div class="d-flex justify-content-center align-items-center mb-2">
                             <!-- Nút Chi tiết -->
-                            <a href="{{ route('fields.show', $field->id) }}" class="btn btn-info">
+                            <a href="{{ route('fields.show', $field->id) }}" class="btn btn-info btn-sm mx-2">
                                 Chi tiết
                             </a>
+                            @auth
+                            <button type="button" class="btn btn-success btn-sm btn-book"
+                                data-id="{{ $field->id }}"
+                                data-name="{{ $field->name }}"
+                                data-start-times='@json($field->availableStartTimes)'>
+                                Đặt sân ngay
+                            </button>
+                            @else
+                                <a href="{{ route('login.login')}}" class="btn btn-secondary btn-sm">
+                                    Đăng nhập để đặt sân
+                                </a>
+                            @endauth
                         </div>
+                        <p class="text-center">Cách vị trí bạn khoảng: {{$field->distance}} km</p>
                         <div class="text-warning text-end">
                                 <strong>{{ number_format($field->average_rating, 1) }}</strong>
                                 <i class="fas fa-star"></i>
@@ -152,6 +165,68 @@
                 </div>
             </div>
             @endforeach
+            <div class="modal fade" id="reserveModal" tabindex="-1">
+                <div class="modal-dialog" style="max-width: 400px;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                <i class="fa fa-futbol m-2"></i> <strong>Đặt sân <span id="modalFieldName"></span></strong>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="bookingForm"
+                            method="POST"
+                            action="{{ route('confirm-reservation') }}">
+                                @csrf
+                                <input type="hidden" id="modalFieldId" name="field_id">
+                                <input type="hidden" name="userId" value="{{ Auth::check() ? Auth::user()->id : '' }}">
+                                <div class="mb-2">
+                                    <label for="date" class="form-label"><strong>Ngày thuê sân</strong></label>
+                                    <input type="text" class="form-control" name="date" id="date_book" 
+                                    placeholder="Chọn ngày"required>
+                                </div>
+                                <div class="mb-2">
+                                    <button type="button" class="btn btn-info" onclick="checkAvailability(event)">Kiểm tra giờ trống</button>
+                                </div>
+                                <div class="mb-2">
+                                    <span id="availableHoursContainer" style="display: none;">
+                                        <ul class="available-hours-list" id="availableHoursList">
+                                        </ul>
+                                        <span class="text-danger" id="noAvailableHoursMessage" style="display: none;">Không có giờ trống</span>
+                                    </span>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label"><strong>Giờ bắt đầu</strong></label>
+                                    <select id="modalStartTime" class="form-select" name="start_time" required>
+                                    <option value="">Chọn giờ bắt đầu</option>
+                                    </select>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label"><strong>Thời gian đá</strong></label>
+                                    <select class="form-select" 
+                                    name="duration" 
+                                        id="duration" required>
+                                        <option value="">Chọn thời gian đá</option>
+                                    </select>
+                                </div>
+                                <div class="mb-2">
+                                    <label for="note" class="form-label"><strong>Ghi chú (không bắt buộc)</strong></label>
+                                    <textarea class="form-control" name="note" id="note" rows="2"></textarea>
+                                </div>
+                                
+                                <div class="d-flex justify-content-center mt-4">
+                                    <button type="button" class="btn btn-primary mx-2" data-bs-dismiss="modal">Hủy</button>
+                                    <button type="button" class="btn btn-success mx-2 continue-btn">
+                                        Tiếp tục
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

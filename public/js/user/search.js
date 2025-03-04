@@ -96,36 +96,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
         });
     });
-    const modals = document.querySelectorAll('.modal');
-    modals.forEach((modal) => {
+    document.querySelectorAll('.modal').forEach(modal => {
         modal.addEventListener('hidden.bs.modal', function () {
-            const startTimeSelect = modal.querySelector('select[name="start_time"]');
-            const durationSelect = modal.querySelector('select[name="duration"]');
-            const inputs = modal.querySelectorAll('input');
-            inputs.forEach((input) => {
-                if (input.type === 'tel' || input.type === 'email') {
-                    input.value = ''; // Reset giá trị input
-                }
-            });
+            let form = modal.querySelector("form");
+            if (form) {
+                let dateInput = form.querySelector('input[name="date"]'); // Lưu giá trị ngày thuê sân
+                let dateValue = dateInput ? dateInput.value : '';
 
-            // Reset giá trị chọn của "Giờ bắt đầu" và "Thời gian đá"
-            if (startTimeSelect) {
-                startTimeSelect.value = ''; // Đặt lại giá trị mặc định
+                form.reset(); // Reset form
+
+                // Phục hồi lại ngày thuê sân
+                if (dateInput) {
+                    dateInput.value = dateValue;
+                }
+
+                // Reset select box về trạng thái mặc định
+                let selects = form.querySelectorAll("select");
+                selects.forEach(select => {
+                    select.selectedIndex = 0;
+                });
             }
-            if (durationSelect) {
-                durationSelect.value = ''; // Đặt lại giá trị mặc định
-            }
-            const name = modal.querySelector('input[name="name"]');
-            const notes = modal.querySelectorAll('textarea[name="note"]');
-            name.value = '';
-            notes.forEach((note) => {
-                note.value = ''; // Reset giá trị của từng textarea
-            });
-            // Đảm bảo các lỗi đều ẩn khi đóng modal
-            const errorMessages = modal.querySelectorAll('.text-danger');
-            errorMessages.forEach((error) => {
-                error.style.display = 'none';
-            });
         });
     });
 });
