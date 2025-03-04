@@ -95,7 +95,7 @@
                                             Đặt sân
                                         </button>
                                     @else
-                                        <a href="{{ route('login.login') }}" class="btn btn-secondary btn-sm w-48">
+                                        <a href="{{ route('login.login',['redirect' => request()->fullUrl()]) }}" class="btn btn-secondary btn-sm w-48">
                                             Đăng nhập để đặt sân
                                         </a>
                                     @endauth

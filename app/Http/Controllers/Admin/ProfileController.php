@@ -29,7 +29,7 @@ class ProfileController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|regex:/^[a-zA-Z0-9._%+-]{3,}@gmail\.com$/|max:255',
             'phone' => 'required|regex:/^0\d{9}$/|unique:users,phone,' . $user->id,
-            'address' => '',  
+            'address' => 'required|string|max:255',  
         ], [
             'name.required' => 'Tên không được để trống.',
             'email.required' => 'Email không được để trống.',
@@ -37,8 +37,8 @@ class ProfileController extends Controller
             'email.regex' => 'Email không hợp lệ.',
             'phone.required' => 'Số điện thoại không được để trống.',
             'phone.regex' => 'Số điện thoại không hợp lệ.',
-            'phone.unique' => 'Số điện thoại đã tồn tại.'
-
+            'phone.unique' => 'Số điện thoại đã tồn tại.',
+            'address.required' => 'Địa chỉ là bắt buộc.'
         ]);
     
         // Cập nhật thông tin trong bảng users

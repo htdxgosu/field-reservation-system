@@ -14,8 +14,11 @@ use Illuminate\Support\Facades\Log;
 class AuthController extends Controller
 {
     // Hiển thị form đăng nhập
-    public function showLoginForm()
+    public function showLoginForm(Request $request)
     {
+        if ($request->has('redirect')) {
+            session(['url.intended' => $request->redirect]);
+        }
         return view('login.login'); // View dành cho admin
     }
 
@@ -40,13 +43,13 @@ class AuthController extends Controller
             } else {
                 // Nếu không tick checkbox, chuyển hướng như khách hàng
                 Auth::guard('web')->login($account);
-                return redirect()->route('home');
+                return redirect()->intended(route('home'));
             }
         }
         elseif ($account instanceof User && $account->role === 'customer') {
             // Đăng nhập cho khách hàng
             Auth::guard('web')->login($account); 
-            return redirect()->route('home'); 
+            return redirect()->intended(route('home'));
         }  
         elseif ($account instanceof Account && $account->role === 'admin') {
             Auth::guard('admin')->login($account); 
@@ -136,6 +139,39 @@ class AuthController extends Controller
         return back()->with('swal', [
             'type' => 'success',  
             'message' => 'Đổi mật khẩu thành công.'
+        ]);
+    }
+    public function showEditUserForm()
+    {
+        $user = Auth::user();
+        return view('login.edit-user', ['user' => $user]); 
+    }
+    public function updateUser(Request $request)
+    {
+        // Kiểm tra số điện thoại và email có tồn tại trong cơ sở dữ liệu, ngoại trừ người dùng hiện tại
+        $user = User::findOrFail($request->input('user_id'));
+
+        // Kiểm tra số điện thoại
+        $existingUserWithPhone = User::where('phone', $request->input('phone'))
+                                    ->where('id', '!=', $user->id)
+                                    ->first();
+
+        if ($existingUserWithPhone) {
+            return response()->json([
+                'type' => 'error',
+                'message' => 'Số điện thoại này đã được sử dụng.',
+            ]);
+        }
+
+        $user->name = $request->input('name');
+        $user->phone = $request->input('phone');
+        $user->email = $request->input('email');
+        
+        $user->save();
+
+        return response()->json([
+            'type' => 'success',
+            'message' => 'Thông tin đã được cập nhật thành công.',
         ]);
     }
 }

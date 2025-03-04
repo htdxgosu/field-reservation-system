@@ -3,6 +3,15 @@
 @section('title', 'Đổi mật khẩu')
 
 @section('content')
+<div class="container-fluid bg-breadcrumb">
+    <div class="container text-center custom-header" style="max-width: 900px;">
+        <h4 class="text-white display-4 wow fadeInDown" data-wow-delay="0.1s">Đổi mật khẩu</h4>
+        <ol class="breadcrumb d-flex justify-content-center mb-0 wow fadeInDown" data-wow-delay="0.3s">
+            <li class="breadcrumb-item"><a href="{{ route('home') }}">Trang chủ</a></li>
+            <li class="breadcrumb-item active text-primary">Đổi mật khẩu</li>
+        </ol>    
+    </div>
+</div>
 <div class="container d-flex justify-content-center align-items-center py-5">
     <div class="card shadow-lg" style="max-width: 400px; width: 100%; padding: 20px;">
         <form action="{{ route('updatePassword') }}" method="POST">
@@ -25,7 +34,7 @@
                 </div>
             @endif
             <div class="d-flex justify-content-end">
-                <button type="submit" class="btn btn-primary">Lưu</button>
+                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
             </div>
         </form>
     </div>

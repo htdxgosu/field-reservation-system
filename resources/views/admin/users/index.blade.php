@@ -33,7 +33,9 @@
                 <th>SDT</th>
                 <th>Email</th>
                 <th>Ngày tạo</th>
-                <th>Hành động</th>
+                <th>Số lần đặt sân</th>
+                <th>Số lần không xác nhận</th>
+                <th>Tỉ lệ hủy đặt</th>
             </tr>
         </thead>
         <tbody>
@@ -43,14 +45,11 @@
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->phone }}</td>
                     <td>{{ $user->email }}</td>
-                    <td>{{ $user->created_at->format('d/m/Y H:s:i') }}</td>
-                    <td>
-                        <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-primary">Sửa</a>
-                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa người dùng này?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger">Xóa</button>
-                        </form>
+                    <td>{{ $user->created_at->format('d/m/Y H:i:s') }}</td>
+                    <td>{{ $user->total_reservations }} lần</td>
+                    <td>{{ $user->pending_reservations }} lần</td>
+                    <td class="{{ $user->cancellation_rate > 15 ? 'text-danger fw-bold' : '' }}">
+                        {{ $user->cancellation_rate }}%
                     </td>
                 </tr>
             @endforeach

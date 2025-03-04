@@ -21,7 +21,7 @@
             <div class="col-xl-6 wow fadeInLeft" data-wow-delay="0.2s">
                 <div class="about-item">
                     <div class="pb-5">
-                        <h1 class="display-5 text-capitalize">Về Chúng Tôi<span class="text-primary"> Hệ Thống Quản Lý Sân Bóng C2C</span></h1>
+                        <h1 class="display-5 text-capitalize">Về Chúng Tôi<span class="text-primary"> Hệ Thống Quản Lý Sân Bóng Mini</span></h1>
                         <p class="mb-0">Nền tảng kết nối trực tiếp chủ sân và khách hàng, 
                             giúp bạn dễ dàng tìm và đặt sân bóng mini chất lượng cao, thuận tiện và nhanh chóng.</p>
                     </div>

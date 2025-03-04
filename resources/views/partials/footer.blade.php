@@ -57,7 +57,7 @@
                 <span class="text-body"><i class="fas fa-copyright text-light me-2"></i>Hệ Thống Quản Lý Sân Bóng Đá Mini, All rights reserved.</span>
             </div>
             <div class="col-md-6 text-center text-md-end text-body">
-             <i class="fas fa-pencil-alt me-2"></i> Designed by HaDuong
+             <i class="fas fa-pencil-alt me-2"></i> Designed by HD
             </div>
         </div>
     </div>

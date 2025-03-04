@@ -92,7 +92,7 @@
                         Đặt sân
                     </button>
                 @else
-                    <a href="{{ route('login.login') }}" class="btn btn-info mb-2">
+                    <a href="{{ route('login.login', ['redirect' => request()->fullUrl()]) }}" class="btn btn-info mb-2">
                         Đăng nhập để đặt sân
                     </a>
                 @endauth
@@ -284,7 +284,7 @@
                         </button>
                     @else
                         <!-- Hiển thị nút Đăng nhập nếu người dùng chưa đăng nhập -->
-                        <a href="{{ route('login.login') }}" class="btn btn-primary btn-sm">Đăng nhập để đánh giá</a>
+                        <a href="{{ route('login.login',['redirect' => request()->fullUrl()]) }}" class="btn btn-primary btn-sm">Đăng nhập để đánh giá</a>
                     @endif
                 </div>
                     <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">

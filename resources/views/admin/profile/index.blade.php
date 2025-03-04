@@ -36,7 +36,7 @@
 
                     <!-- Thêm trường địa chỉ -->
                     <div class="form-group mt-3">
-                        <label for="address"><strong>Địa chỉ</strong></label>
+                        <label for="address"><strong>Địa chỉ</strong> <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="address" name="address" value="{{ old('address', $fieldOwner->address) }}">
                     </div>
 
@@ -106,7 +106,6 @@
         <script>
             Swal.fire({
                 icon: 'error',
-                title: 'Đã xảy ra lỗi',
                 html: `{!! implode('<br>', $errors->all()) !!}`, 
                 showConfirmButton: true,
                 customClass: {

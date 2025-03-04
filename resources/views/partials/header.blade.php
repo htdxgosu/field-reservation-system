@@ -70,9 +70,14 @@
                         <i class="fas fa-user me-2"></i>Chào, <span class="fw-bold text-primary">{{ Auth::user()->name }}</span></a>
                         <div class="dropdown-menu ms-5">
                             <!-- Dropdown item -->
-                            <a href="{{ route('changePasswordForm') }}" class="dropdown-item">
-                                <i class="fas fa-key me-4"></i>Đổi mật khẩu
-                            </a>
+                            @if(Auth::user()->role !== 'field_owner') 
+                                <a href="{{ route('editUserForm') }}" class="dropdown-item">
+                                    <i class="fas fa-user-edit me-3"></i>Cập nhật thông tin cá nhân
+                                </a>
+                                <a href="{{ route('changePasswordForm') }}" class="dropdown-item">
+                                    <i class="fas fa-key me-4"></i>Đổi mật khẩu
+                                </a>
+                            @endif
                             <a href="javascript:void(0);" class="dropdown-item" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                              <i class="fas fa-sign-out-alt me-4"></i>Đăng xuất
                             </a>

@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
+
 class User extends  Authenticatable
 {
     use HasFactory,Notifiable;
@@ -55,5 +57,35 @@ class User extends  Authenticatable
     public function fieldOwner()
     {
         return $this->hasOne(FieldOwner::class);
+    }
+    public function getTotalReservationsAttribute()
+    {
+        $ownerId = Auth::id();
+        $fieldIds = Field::where('user_id', $ownerId)->pluck('id');
+        return $this->reservations()->whereIn('field_id', $fieldIds)->count();
+    }
+
+    // Số lần đặt sân chưa xác nhận
+    public function getPendingReservationsAttribute()
+    {
+        $ownerId = Auth::id();
+        $fieldIds = Field::where('user_id', $ownerId)->pluck('id');
+        return $this->reservations()->whereIn('field_id', $fieldIds)->where('status', 'chờ xác nhận')->count();
+    }
+
+    // Số lần đặt sân bị hủy
+    public function getCancelledReservationsAttribute()
+    {
+        $ownerId = Auth::id();
+        $fieldIds = Field::where('user_id', $ownerId)->pluck('id');
+        return $this->reservations()->whereIn('field_id', $fieldIds)->where('status', 'đã hủy')->count();
+    }
+
+    // Tính tỉ lệ hủy
+    public function getCancellationRateAttribute()
+    {
+        return $this->total_reservations > 0 
+            ? round(($this->cancelled_reservations / $this->total_reservations) * 100, 2)
+            : 0;
     }
 }

@@ -114,8 +114,7 @@ Route::post('/check-available-hours', [UserReservationController::class, 'checkA
 // Route để hủy yêu cầu đặt sân
 Route::delete('/cancel-reservation/{reservation}', [ViewReservationController::class, 'cancel'])->name('cancel-reservation');
 //
-Route::put('/reservation-info/updateUser', [ViewReservationController::class, 'updateUser'])->name('user.update');
-// web.php
+
 Route::put('/reservation/{reservation}/confirm', [ViewReservationController::class, 'confirm'])->name('reservation.confirm');
 Route::get('/reservation-info/{id}/invoice', [ViewReservationController::class, 'printInvoice'])->name('reservation.invoice');
 //
@@ -146,6 +145,9 @@ Route::middleware([CheckLoggedIn::class])->group(function () {
     })->name('register-owner');
     Route::post('/register-owner/register', [RegistrationController::class, 'register'])
     ->name('register-owner.register');
+    //
+    Route::get('edit-user', [LoginAuthController::class, 'showEditUserForm'])->name('editUserForm');
+    Route::put('/edit-user', [LoginAuthController::class, 'updateUser'])->name('user.update');
 
 });
 
@@ -160,9 +162,6 @@ Route::middleware([CheckFieldOwner::class])->prefix('admin')->group(function () 
 
     // Route hiển thị danh sách người dùng
     Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
-    Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
-    Route::post('/users/{id}/update', [UserController::class, 'update'])->name('admin.users.update');
-    Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('admin.users.destroy');
     //
     Route::post('/reviews/{review}/reply', [ReviewController::class, 'reply'])->name('reviews.reply');
     Route::delete('/reviews/{review}/reply', [ReviewController::class, 'deleteReply'])->name('reviews.delete_reply');

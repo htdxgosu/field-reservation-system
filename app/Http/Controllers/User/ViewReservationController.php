@@ -32,35 +32,6 @@ class ViewReservationController extends Controller
         ]);
     }
 
-    public function updateUser(Request $request)
-{
-    // Kiểm tra số điện thoại và email có tồn tại trong cơ sở dữ liệu, ngoại trừ người dùng hiện tại
-    $user = User::findOrFail($request->input('user_id'));
-
-    // Kiểm tra số điện thoại
-    $existingUserWithPhone = User::where('phone', $request->input('phone'))
-                                 ->where('id', '!=', $user->id)
-                                 ->first();
-
-    if ($existingUserWithPhone) {
-        return response()->json([
-            'type' => 'error',
-            'message' => 'Số điện thoại này đã được sử dụng.',
-        ]);
-    }
-
-    $user->name = $request->input('name');
-    $user->phone = $request->input('phone');
-    $user->email = $request->input('email');
-    
-    $user->save();
-
-    return response()->json([
-        'type' => 'success',
-        'message' => 'Thông tin đã được cập nhật thành công.',
-    ]);
-}
-
     
     public function confirm($reservationId)
     {

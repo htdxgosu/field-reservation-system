@@ -39,7 +39,7 @@
     <div class="container mt-4">
         <div class="row mb-4">
             <!-- Cột bên trái: Tên và số điện thoại của người đặt -->
-            <div class="col-md-3">
+            <div class="col-md-3 mb-5">
                 <div class="card shadow-sm w-100 p-3">
                     <h5 class="mb-2">
                     <i class="bi bi-person-circle me-2"></i><strong>Thông tin khách hàng</strong></h5>
@@ -47,47 +47,6 @@
                         <p><strong> Họ & Tên: </strong> {{ $user->name }}</p>
                         <p><strong>Số điện thoại: </strong> {{ $user->phone }}</p>
                         <p><strong>Email: </strong> {{ $user->email }}</p>
-                        <!-- Nút Đăng xuất -->
-                        <button type="button" class="btn btn-secondary edit-info-btn mb-2 w-50" data-bs-toggle="modal" data-bs-target="#editUserModal">
-                            Chỉnh sửa
-                        </button>
-                        <!-- Modal chỉnh sửa thông tin -->
-                        <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
-                            <div class="modal-dialog w-25">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="editUserModalLabel"><strong>Chỉnh sửa thông tin</strong></h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <form action="{{ route('user.update') }}" method="POST" id="editUserForm">
-                                        @csrf
-                                        @method('PUT') 
-                                        <div class="modal-body">
-                                        <input type="hidden" name="user_id" value="{{ $user->id }}">
-                                            <!-- Tên người đặt -->
-                                            <div class="mb-3">
-                                                <label for="name" class="form-label"><strong>Họ & Tên</strong></label>
-                                                <input type="text" class="form-control" id="name" name="name" value="{{ $user->name }}" required>
-                                            </div>
-                                            <!-- Số điện thoại -->
-                                            <div class="mb-3">
-                                                <label for="phone" class="form-label"><strong>Số điện thoại</strong></label>
-                                                <input type="text" class="form-control" id="phone" name="phone" value="{{ $user->phone }}" required>
-                                            </div>
-                                            <!-- Email -->
-                                            <div class="mb-3">
-                                                <label for="email" class="form-label"><strong>Email</strong></label>
-                                                <input type="email" class="form-control" id="email" name="email" value="{{ $user->email }}" required>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                            <button type="submit" class="btn btn-success">Lưu thay đổi</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
                 </div>
             </div>
 
