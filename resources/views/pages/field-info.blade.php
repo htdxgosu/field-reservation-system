@@ -16,7 +16,7 @@
     <div class="row">
         <div class="col-md-5">
          <div id="carouselExample" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
-                <div class="carousel-inner">
+                <div class="carousel-inner h-100">
                     <!-- Ảnh đầu tiên -->
                     <div class="carousel-item active">
                         <img src="{{ asset($field->image_url) }}" class="d-block w-100 img-fluid" alt="{{ $field->name }}">
@@ -365,7 +365,7 @@
 
 .carousel-inner img {
     object-fit: cover;  /* Ảnh sẽ tự động điều chỉnh kích thước mà không bị vỡ */
-    min-height: 300px; 
+    min-height: 400px; 
     width: 100%;
     border-radius: 8px;
     transition: transform 0.5s ease, filter 0.3s ease, box-shadow 0.3s ease;  /* Thêm các hiệu ứng chuyển đổi */

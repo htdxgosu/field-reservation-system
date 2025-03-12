@@ -33,28 +33,29 @@
     </div>
     <div class="row">
         @foreach($fields as $field)
-            <div class="col-md-4">
-                <a href="{{ route('admin.fields.show', $field->id) }}">
-                    <div class="card mb-3" style="min-height:520px">
+            <div class="col-12 col-md-4 d-flex">
+                <a href="{{ route('admin.fields.show', $field->id) }}" class="w-100 text-decoration-none">
+                    <div class="card mb-3 h-100 d-flex flex-column">
                         <!-- Hình ảnh sân -->
                         <img src="{{ asset($field->image_url) }}" alt="Hình ảnh sân" class="card-img-top" style="height: 300px; object-fit: cover;">
 
                         <!-- Nội dung chính -->
-                        <div class="card-body">
-                            <h5 class="card-title text-center fw-bold">{{ $field->name }}</h5>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title text-center fw-bold text-dark">{{ $field->name }}</h5>
                             <p class="card-text">
                                 <strong>Loại sân:</strong> {{ $field->fieldType->name }}
                             </p>
                             <p class="card-text">
                                 <strong>Địa chỉ:</strong> {{ $field->location  }}
                             </p>
-                            <div class="d-flex justify-content-center align-items-center mt-2">
-                                <a href="{{ route('admin.fields.show', $field->id) }}" class="btn btn-info">Chi tiết</a>
+                            <div class="d-flex justify-content-center mt-3">
+                                <button class="btn btn-info">Chi tiết</button>
                             </div>
-                            <div class="text-warning text-end">
-                                <strong>{{ $field->average_rating}}</strong>
+                            <div class="text-warning text-end mt-auto">
+                                <strong>{{ $field->average_rating }}</strong>
                                 <i class="fas fa-star"></i>
                             </div>
+                        
                         </div>
                     </div>
                 </a>

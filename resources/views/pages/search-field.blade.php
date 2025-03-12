@@ -18,21 +18,21 @@
         <div class="container-fluid team py-3">
             <div class="container py-3">
             <a href="/" class="btn btn-secondary mb-3">Về trang chủ</a>
-                <h4>Kết quả tìm kiếm sân ngày {{ \Carbon\Carbon::parse($date)->format('d/m/Y') }} </h4>
+                <h4>Kết quả tìm kiếm sân gần bạn ngày {{ \Carbon\Carbon::parse($date)->format('d/m/Y') }} </h4>
                 @if($fields->isEmpty())
                     <p>Không tìm thấy sân phù hợp với yêu cầu của bạn.</p>
                 @else
                 <div class="row">
                     @foreach($fields as $field)
                         <div class="col-md-6 mb-4 mt-2">
-                            <div class="card d-flex flex-row" style="min-height:440px">
-                             <div class="col-md-7 p-2">
-                                <img src="{{ $field->image_url ?? 'default-image.jpg' }}" class="img-fluid rounded hover-effect" alt="Hình ảnh sân" 
-                                 style="object-fit: cover; width: 100%; min-height: 400px;">
+                            <div class="card d-flex flex-md-row h-100 shadow-lg" style="min-height: 440px;">
+                             <div class="col-md-7 p-2 d-flex align-items-stretch">
+                                <img src="{{ $field->image_url ?? 'default-image.jpg' }}" class="img-fluid w-100 rounded hover-effect" alt="Hình ảnh sân" 
+                                style="object-fit: cover; height: 100%; min-height: 440px;">
                             </div>
-                             <div class="col-md-5">
+                             <div class="col-md-5 d-flex align-items-stretch">
                                 <!-- Nội dung bên phải -->
-                                <div class="card-body d-flex flex-column justify-content-between">
+                                <div class="card-body d-flex flex-column justify-content-between h-100">
                                     <a href="{{ route('fields.show', $field->id) }}">
                                         <h4 class="text-center mb-3 fw-bold">{{ $field->name }}</h4>
                                     </a>

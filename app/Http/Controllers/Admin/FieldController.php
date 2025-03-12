@@ -359,10 +359,11 @@ class FieldController extends Controller
 
         if ($secondImagePath) {
             $field->second_image_url = $secondImagePath;
-        } else {
-            // Nếu không có ảnh mới và đã xóa ảnh cũ, đặt lại URL ảnh phụ thành null
+        } elseif ($request->has('delete_second_image')) {
+            // Chỉ đặt null nếu người dùng chọn xóa ảnh
             $field->second_image_url = null;
         }
+        
 
         // Lưu thông tin sân bóng vào cơ sở dữ liệu
         $field->save();

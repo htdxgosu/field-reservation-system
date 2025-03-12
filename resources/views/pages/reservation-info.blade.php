@@ -56,24 +56,23 @@
                     <h5 class="text-center mb-4"><strong>Lịch sử đặt sân</strong></h5>
                     @if($reservations && !$reservations->isEmpty())
                         <div class="filter-buttons mb-3">
-                            <button class="btn btn-outline-primary filter-btn " data-filter="all">Tất cả</button>
-                            <button class="btn btn-outline-secondary filter-btn" data-filter="chờ xác nhận">Chưa xác nhận</button>
-                            <button class="btn btn-outline-success filter-btn" data-filter="đã xác nhận">Đã xác nhận</button>
-                            <button class="btn btn-outline-danger filter-btn" data-filter="đã hủy">Đã hủy</button>
-                            <button class="btn btn-outline-info filter-btn" data-filter="đã thanh toán">Đã thanh toán</button>
+                            <button class="btn btn-outline-primary filter-btn mb-2" data-filter="all">Tất cả</button>
+                            <button class="btn btn-outline-secondary filter-btn mb-2" data-filter="chờ xác nhận">Chưa xác nhận</button>
+                            <button class="btn btn-outline-success filter-btn mb-2" data-filter="đã xác nhận">Đã xác nhận</button>
+                            <button class="btn btn-outline-danger filter-btn mb-2" data-filter="đã hủy">Đã hủy</button>
+                            <button class="btn btn-outline-info filter-btn mb-2" data-filter="đã thanh toán">Đã thanh toán</button>
                         </div>
                         <div class="no-results-message mt-2" style="display: none; text-align: center;font-size:1.5rem">
                             Không có đơn đặt sân nào trong trạng thái này.
                         </div>
                         <!-- Hiển thị lịch sử đặt sân -->
-                        <table class="table table-bordered text-center" style="vertical-align:middle">
+                        <div class="table-responsive d-none d-md-block">
+                        <table class="table table-bordered table-responsive text-center" style="vertical-align:middle">
                             <thead>
                                 <tr>
                                     <th>Tên sân</th>
                                     <th>Ngày thuê sân</th>
-                                    <th>Giờ bắt đầu</th>
-                                    <th>Thời gian đá</th>
-                                    <th>Tổng tiền</th>
+                                    <th class="d-none d-md-table-cell">Tổng tiền</th>
                                     <th>Trạng thái</th>
                                     <th>Hành động</th>
                                 </tr>
@@ -83,9 +82,7 @@
                                     <tr class="reservation-item" data-status="{{ $reservation->status }}">
                                         <td><strong>{{ $reservation->field->name }}</strong></td>
                                         <td>{{ \Carbon\Carbon::parse($reservation->start_time)->format('d/m/Y') }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($reservation->start_time)->format('H:i') }}</td>
-                                        <td>{{ $reservation->duration->duration }} phút</td>
-                                        <td><strong><span class="text-danger">{{ number_format($reservation->total_amount, 0, ',', '.') }}đ</span></strong></td>
+                                        <td class="d-none d-md-table-cell"><strong><span class="text-danger">{{ number_format($reservation->total_amount, 0, ',', '.') }}đ</span></strong></td>
                                         <td>
                                             @if($reservation->status === 'chờ xác nhận')
                                                 <span class="badge bg-warning text-dark">
@@ -191,7 +188,7 @@
                                                 </div>
                                                 <div class="modal-body">
                                                     <!-- Hiển thị thông tin chi tiết về đơn đặt -->
-                                                    <h5><strong>Tên sân: {{ $reservation->field->name }}</strong></h5>
+                                                    <h4><strong>{{ $reservation->field->name }}</strong></h4>
                                                     <p><strong>Ngày thuê sân: </strong>{{ \Carbon\Carbon::parse($reservation->start_time)->format('d/m/Y') }}</p>
                                                     <p><strong>Giờ bắt đầu: </strong>{{ \Carbon\Carbon::parse($reservation->start_time)->format('H:i') }}</p>
                                                     <p><strong>Thời gian đá: </strong>{{ $reservation->duration->duration }} phút</p>
@@ -220,7 +217,47 @@
                                 @endforeach
                             </tbody>
                         </table>
-                    
+                        </div>
+                        <div class="d-block d-md-none">
+                            @foreach($reservations as $reservation)
+                                <div class="card mb-3 reservation-item" data-status="{{ $reservation->status }}">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ $reservation->field->name }}</h5>
+                                        <p class="card-text"><strong>Ngày thuê:</strong> {{ \Carbon\Carbon::parse($reservation->start_time)->format('d/m/Y') }}</p>
+                                        <p><strong>Trạng thái: </strong>
+                                            @if($reservation->status === 'chờ xác nhận')
+                                                <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                            @elseif($reservation->status === 'đã hủy')
+                                                <span class="badge bg-danger">Đã hủy</span>
+                                            @elseif($reservation->status === 'đã thanh toán')
+                                                <span class="badge bg-info">Đã thanh toán</span>
+                                            @else
+                                                <span class="badge bg-success">Đã xác nhận</span>
+                                            @endif
+                                        </p>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            @if($reservation->status === 'chờ xác nhận')
+                                                <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#inforModal_{{ $reservation->id }}" data-reservation-id="{{ $reservation->id }}">Chi tiết</button>
+                                                <button type="button" class="btn btn-primary btn-sm" onclick="return cancelReservation('{{ $reservation->id }}')">Hủy đặt</button>
+                                                <form action="{{ route('reservation.confirm', $reservation->id) }}" method="POST" style="display:inline-block;">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <button type="submit" class="btn btn-success btn-sm">Xác nhận</button>
+                                                </form>
+                                            @elseif($reservation->status === 'đã hủy')
+                                                <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#inforModal_{{ $reservation->id }}" data-reservation-id="{{ $reservation->id }}">Chi tiết</button>
+                                            @elseif($reservation->status === 'đã xác nhận')
+                                                <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#inforModal_{{ $reservation->id }}" data-reservation-id="{{ $reservation->id }}">Chi tiết</button>
+                                            @else
+                                                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#ratingModal_{{ $reservation->id }}" onclick="handleRating('{{ $reservation->id }}')">Đánh giá</button>
+                                                <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#inforModal_{{ $reservation->id }}" data-reservation-id="{{ $reservation->id }}">Chi tiết</button>
+                                                <a href="{{ route('reservation.invoice', $reservation->id) }}" class="btn btn-secondary btn-sm">Xem hóa đơn</a>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
                         <!-- Thanh phân trang chỉ hiển thị khi có hơn 15 đơn -->
                         @if($reservations->total() > 15)
                             <div class="d-flex justify-content-center mt-3">
@@ -239,10 +276,7 @@
 
 <!-- CSS trực tiếp thêm vào -->
 <style>
-/* Đặt modal thấp xuống một chút */
-.modal-dialog {
-    margin-top: 10vh; /* Điều chỉnh giá trị này để modal xuống thấp hơn */
-}
+
 .star-rating {
     display: flex;
     justify-content: center; 
@@ -257,6 +291,7 @@
 .star-rating i.selected {
     color: #f39c12; 
 }
+
 </style>
 
 @endsection

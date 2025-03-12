@@ -112,14 +112,14 @@
         <div class="row g-4">
             @foreach($fields as $field)
             <div class="col-md-6 px-3">
-                <div class="row align-items-center shadow-lg p-3 bg-white rounded">
+                <div class="row align-items-stretch shadow-lg p-3 bg-white rounded h-100">
                     <!-- Cột ảnh bên trái -->
-                    <div class="col-md-7">
-                        <img src="{{ asset($field->image_url) }}" class="img-fluid rounded hover-effect" alt="{{ $field->name }}"
-                         style="object-fit: cover; min-height: 350px; width: 100%;">
+                    <div class="col-md-7 d-flex">
+                        <img src="{{ asset($field->image_url) }}" class="img-fluid w-100 h-100 rounded hover-effect" 
+                            alt="{{ $field->name }}" style="object-fit: cover;">
                     </div>
                     <!-- Cột thông tin bên phải -->
-                    <div class="col-md-5">
+                    <div class="col-md-5 d-flex flex-column justify-content-between">
                         <a href="{{ route('fields.show', $field->id) }}">
                             <h4 class="text-center mb-3 fw-bold">{{ $field->name }}</h4>
                         </a>
