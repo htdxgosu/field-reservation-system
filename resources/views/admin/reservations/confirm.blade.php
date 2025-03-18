@@ -10,10 +10,10 @@
             </ol>
     </nav>
     <div class="row justify-content-center">
-        <div class="col-md-6">
+        <div class="col-md-8">
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
-                    <h4 class="mb-3">Thông tin đặt sân:</h4>
+                    <h4 class="mb-3 fw-bold text-center">Thông tin đặt sân</h4>
                         <form id="reservationForm" action="{{ route('admin.reservations.store') }}" method="POST">
                         @csrf
                             <table class="table table-bordered table-striped">
@@ -78,7 +78,7 @@
                                     </tr>
                                     <tr>
                                         <td><strong>Thành tiền:</strong></td>
-                                        <td><strong>{{ number_format($totalPrice, 0, ',', '.') }} VND</strong></td>
+                                        <td class="text-danger fw-bold"><strong>{{ number_format($totalPrice, 0, ',', '.') }}đ</strong></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -94,7 +94,7 @@
 
                             <div class="d-flex justify-content-end mt-4">
                                 <button type="button" class="btn btn-secondary mx-2" onclick="goBack()">Quay lại</button>
-                                <button type="submit" class="btn btn-success">Xác nhận đặt sân</button>
+                                <button type="submit" class="btn btn-success">Xác nhận tạo đặt sân</button>
                             </div>
                         </form>
                 </div>

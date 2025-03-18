@@ -32,7 +32,6 @@
                 <th>Tên</th>
                 <th>SDT</th>
                 <th>Email</th>
-                <th>Ngày tạo</th>
                 <th>Số lần đặt sân</th>
                 <th>Số lần không xác nhận</th>
                 <th>Tỉ lệ hủy đặt</th>
@@ -42,10 +41,10 @@
             @foreach($users as $index => $user) <!-- Dùng biến đếm $index -->
                 <tr>
                     <td>{{ $index + 1 }}</td> <!-- Thêm số thứ tự -->
-                    <td>{{ $user->name }}</td>
+                    <td><a href="{{ route('admin.reservations.index', ['search_user' => $user->phone]) }}"
+                     class="text-dark text-decoration-none d-block w-100">{{ $user->name }}</a></td>
                     <td>{{ $user->phone }}</td>
                     <td>{{ $user->email }}</td>
-                    <td>{{ $user->created_at->format('d/m/Y H:i:s') }}</td>
                     <td>{{ $user->total_reservations }} lần</td>
                     <td>{{ $user->pending_reservations }} lần</td>
                     <td class="{{ $user->cancellation_rate > 15 ? 'text-danger fw-bold' : '' }}">

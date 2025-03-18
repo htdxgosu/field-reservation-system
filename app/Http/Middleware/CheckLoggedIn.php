@@ -16,9 +16,11 @@ class CheckLoggedIn
         }
 
         // Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập
-        return redirect()->route('login.login')->with('swal', [
-            'type' => 'warning',  
-            'message' => 'Vui lòng đăng nhập để truy cập chức năng này.'
-        ]);
+        return redirect()->route('login.login', ['redirect' => request()->fullUrl()])
+    ->with('swal', [
+        'type' => 'warning',
+        'message' => 'Vui lòng đăng nhập để truy cập chức năng này.'
+    ]);
+
     }
 }

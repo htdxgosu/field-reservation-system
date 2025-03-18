@@ -21,6 +21,7 @@
     <h3 class="mb-2">
         <i class="fas fa-calendar-alt"></i> Lịch thi đấu các sân ngày {{$dateFormatted}}
     </h3>
+    
     <div class="mb-4">
         <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#chooseFieldModal">
             Tạo đơn đặt sân

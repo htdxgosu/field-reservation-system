@@ -92,7 +92,7 @@
                         </div>
                     </div>
                     <p><strong>Mô tả:</strong> {{ $field->description }}</p>
-                     <!-- Form chọn ngày -->
+                     <!-- 
                      <form method="GET" action="{{ route('admin.fields.show', ['id' => $field->id]) }}">
                         <div class="mb-2">
                             <label for="date" class="form-label">Chọn ngày:</label>
@@ -101,7 +101,6 @@
                         </div>
                         <button type="submit" class="btn btn-primary">Kiểm tra giờ trống</button>
                     </form>
-                    <!-- Hiển thị danh sách giờ trống -->
                     <div class="mt-2">
                             @if(count($availableHours) > 0)
                                 <ul class="list-group">
@@ -115,6 +114,7 @@
                                 <p>Không có giờ trống trong ngày hôm nay.</p>
                             @endif
                         </div>
+                        -->
                     <!-- Nút hành động -->
                     <div class="mt-2 d-flex justify-content-center">
                         <a href="{{ route('admin.fields.edit', $field->id) }}" class="btn btn-warning mx-2">Sửa</a>

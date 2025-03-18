@@ -38,24 +38,12 @@
  
     <div class="container mt-4">
         <div class="row mb-4">
-            <!-- Cột bên trái: Tên và số điện thoại của người đặt -->
-            <div class="col-md-3 mb-5">
-                <div class="card shadow-sm w-100 p-3">
-                    <h5 class="mb-2">
-                    <i class="bi bi-person-circle me-2"></i><strong>Thông tin khách hàng</strong></h5>
-                    <!-- Hiển thị tên và số điện thoại người đặt -->
-                        <p><strong> Họ & Tên: </strong> {{ $user->name }}</p>
-                        <p><strong>Số điện thoại: </strong> {{ $user->phone }}</p>
-                        <p><strong>Email: </strong> {{ $user->email }}</p>
-                </div>
-            </div>
-
             <!-- Cột bên phải: Lịch sử đặt sân -->
-            <div class="col-md-9">
+            <div class="col-md-12">
                 <div class="card shadow-sm p-2 w-100 mb-4">
                     <h5 class="text-center mb-4"><strong>Lịch sử đặt sân</strong></h5>
                     @if($reservations && !$reservations->isEmpty())
-                        <div class="filter-buttons mb-3">
+                        <div class="filter-buttons text-center mb-3">
                             <button class="btn btn-outline-primary filter-btn mb-2" data-filter="all">Tất cả</button>
                             <button class="btn btn-outline-secondary filter-btn mb-2" data-filter="chờ xác nhận">Chưa xác nhận</button>
                             <button class="btn btn-outline-success filter-btn mb-2" data-filter="đã xác nhận">Đã xác nhận</button>
@@ -67,9 +55,10 @@
                         </div>
                         <!-- Hiển thị lịch sử đặt sân -->
                         <div class="table-responsive d-none d-md-block">
-                        <table class="table table-bordered table-responsive text-center" style="vertical-align:middle">
+                        <table class="table table-bordered table-striped table-responsive text-center" style="vertical-align:middle">
                             <thead>
                                 <tr>
+                                    <th>Stt</th>
                                     <th>Tên sân</th>
                                     <th>Ngày thuê sân</th>
                                     <th class="d-none d-md-table-cell">Tổng tiền</th>
@@ -78,9 +67,13 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($reservations as $reservation)
+                                @foreach($reservations as $index => $reservation)
                                     <tr class="reservation-item" data-status="{{ $reservation->status }}">
-                                        <td><strong>{{ $reservation->field->name }}</strong></td>
+                                        <td>{{ $index+1 }}</td>
+                                        <td> <a href="{{ route('fields.show', $reservation->field->id) }}" 
+                                            class="text-dark text-decoration-none fw-bold">
+                                            {{ $reservation->field->name }}
+                                        </a></td>
                                         <td>{{ \Carbon\Carbon::parse($reservation->start_time)->format('d/m/Y') }}</td>
                                         <td class="d-none d-md-table-cell"><strong><span class="text-danger">{{ number_format($reservation->total_amount, 0, ',', '.') }}đ</span></strong></td>
                                         <td>
@@ -105,11 +98,11 @@
                                         <td>
                                             @if($reservation->status === 'chờ xác nhận')
                                                 <!-- Nút Chỉnh sửa -->
-                                                <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#inforModal_{{ $reservation->id }}" data-reservation-id="{{ $reservation->id }}">
+                                                <button class="btn btn-info btn-sm mx-2" data-bs-toggle="modal" data-bs-target="#inforModal_{{ $reservation->id }}" data-reservation-id="{{ $reservation->id }}">
                                                     Chi tiết
                                                 </button>
                                                 <!-- Nút Hủy yêu cầu -->
-                                                <button type="button" class="btn btn-primary btn-sm"
+                                                <button type="button" class="btn btn-primary btn-sm mx-2"
                                                 onclick="return cancelReservation('{{ $reservation->id }}')">
                                                     Hủy đặt 
                                                 </button>
@@ -117,7 +110,7 @@
                                                 <form action="{{ route('reservation.confirm', $reservation->id) }}" method="POST" style="display:inline-block;">
                                                     @csrf
                                                     @method('PUT')
-                                                    <button type="submit" class="btn btn-success btn-sm">Xác nhận</button>
+                                                    <button type="submit" class="btn btn-success btn-sm mx-2">Xác nhận</button>
                                                 </form>
                                             @else
                                                 @if($reservation->status === 'đã hủy')
@@ -136,15 +129,15 @@
                                                     Chi tiết
                                                 </button>
                                                 @else
-                                                    <button type="button" class="btn btn-success btn-sm" 
+                                                    <button type="button" class="btn btn-success btn-sm mx-2" 
                                                     data-bs-toggle="modal" data-bs-target="#ratingModal_{{ $reservation->id }}"
                                                     onclick="handleRating('{{ $reservation->id }}')">
                                                         Đánh giá
                                                     </button>
-                                                    <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#inforModal_{{ $reservation->id }}" data-reservation-id="{{ $reservation->id }}">
+                                                    <button class="btn btn-info btn-sm mx-2" data-bs-toggle="modal" data-bs-target="#inforModal_{{ $reservation->id }}" data-reservation-id="{{ $reservation->id }}">
                                                         Chi tiết
                                                     </button>
-                                                    <a href="{{ route('reservation.invoice', $reservation->id) }}" class="btn btn-secondary btn-sm">Xem hóa đơn</a>
+                                                    <a href="{{ route('reservation.invoice', $reservation->id) }}" class="btn btn-secondary btn-sm mx-2">Xem hóa đơn</a>
                                                 @endif
                                             @endif
                                         </td>

@@ -56,7 +56,7 @@ class ReservationController extends Controller
                     }
                 });
             })
-            ->orderBy('created_at', 'desc')
+            ->orderBy('start_time', 'desc')
             ->paginate(15);
         $noResults = $reservations->isEmpty();
          foreach ($reservations as $reservation) {

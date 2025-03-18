@@ -147,7 +147,7 @@ class FieldController extends Controller
     // Lưu các giờ trống vào đối tượng sân
     $field->availableHours = $availableHours;
     $field->availableStartTimes = $availableStartTimes;
-    $fields = $fields->sortBy('distance');
+    $fields = $fields->sortBy('distance')->take(4);
     }
     
     return view('pages.search-field', compact('fields', 'date', 'durations'));

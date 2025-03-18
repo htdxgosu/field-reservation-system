@@ -16,44 +16,51 @@
         </div>
         <!-- Stats Cards -->
         <div class="row">
-             <div class="col-md-3">
+             <div class="col-md-3 mb-2">
                 <div class="card stats-card">
                     <div class="card-body">
-                        <p>Số đơn đặt sân trong ngày: {{$reservationCountToday }}</p>
+                        <a href="{{ route('admin.reservations.index', ['date' => today()->format('d/m/Y')]) }}">
+                            <p>Số đơn đặt sân hôm nay: {{ $reservationCountToday }}</p>
+                        </a>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 mb-2">
                 <div class="card stats-card">
                     <div class="card-body">
-                        <a href="{{ route('admin.reservations.index') }}"><p>Số đơn đặt chưa xác nhận: {{$reservationPendingCount }}</p></a>
+                        <a href="{{ route('admin.reservations.index', ['status' => 'đã xác nhận', 'date' => today()->format('d/m/Y')]) }}">
+                            <p>Số đơn thi đấu hôm nay: {{ $reservationMatchTodayCount }}</p>
+                        </a>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 mb-2">
                 <div class="card stats-card">
                     <div class="card-body">
-                        <p>Tổng số đơn đặt sân: {{$reservationCount }}</p>
+                        <a href="{{ route('admin.reservations.index', ['status' => 'chờ xác nhận']) }}">
+                            <p>Số đơn đặt chưa xác nhận: {{ $reservationPendingCount }}</p>
+                        </a>
                     </div>
                 </div>
             </div>
-       
-            <div class="col-md-3">
+            <div class="col-md-3 mb-2">
                 <div class="card stats-card">
                     <div class="card-body">
-                        <p>Tổng số khách hàng: {{$userCount }}</p>
+                        <a href="{{ route('admin.reservations.index') }}">
+                            <p>Tổng số đơn đặt sân: {{ $reservationCount }}</p>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
      <div class="row mt-2">
         <div class="col-md-12">
-                <h5 class="card-title mb-2">Sân của bạn</h5>
+                <h4 class="card-title mb-2">Sân hiện tại của bạn</h4>
                 <table class="table table-striped table-hover table-bordered text-center">
                     <thead class="thead-dark">
                         <tr>
                             <th>STT</th>
-                            <th class="w-25">Sân của bạn</th>
+                            <th class="w-25">Tên sân</th>
                             <th>Giờ trống hôm nay</th>
                         </tr>
                     </thead>
@@ -79,19 +86,56 @@
         </div>
 
         <!-- Recent Activity -->
-        <div class="mt-2 col-md-6">
+        <div class="mt-2 col-md-8">
             <h4>Hoạt động gần đây</h4>
             <div class="card">
                 <div class="card-body">
                     <ul>
-                    @foreach ($recentActivities as $activity)
-                      <li style="color: #333;">
-                            <span style="color: #007bff; font-weight: bold;">{{ $activity->user->name }}</span> đã 
-                            <span style="color: #28a745; font-style: italic;">{{ $activity->action }}</span> 
-                            <span style="color: #17a2b8; font-weight: bold;">{{ $activity->field->name }}</span> 
-                            lúc <span style="color: #6c757d;">{{ $activity->created_at->format('H:i d/m/Y') }}</span>
-                        </li>
-                    @endforeach
+                        @foreach ($recentActivities as $activity)
+                            @if ($activity->reservation_id)
+                                <a href="{{ route('admin.reservations.show', $activity->reservation_id) }}" 
+                                style="text-decoration: none; color: inherit;">
+                            @endif
+                            <div class="row py-2 border-bottom align-items-center">
+                                <!-- Cột: Người dùng -->
+                                <div class="col-md-3">
+                                    <span style="font-weight: bold;">{{ $activity->user->name }}</span>
+                                </div>
+
+                                <!-- Cột: Hành động (màu theo trạng thái) -->
+                                <div class="col-md-3">
+                                    @switch($activity->action)
+                                        @case('đặt')
+                                            <span style="color: rgb(89, 203, 112); font-style: italic; font-weight: bold;">đã {{ $activity->action }}</span>
+                                            @break
+                                        @case('xác nhận đặt')
+                                            <span style="color: #17a2b8; font-style: italic; font-weight: bold;">đã {{ $activity->action }}</span>
+                                            @break
+                                        @case('hủy đặt')
+                                            <span style="color: #dc3545; font-style: italic; font-weight: bold;"> đã {{ $activity->action }}</span>
+                                            @break
+                                        @case('đánh giá')
+                                            <span style="color: #007bff; font-style: italic; font-weight: bold;"> đã {{ $activity->action }}</span>
+                                            @break
+                                        @default
+                                            <span style="color: #333; font-style: italic; font-weight: bold;">{{ $activity->action }}</span>
+                                    @endswitch
+                                </div>
+
+                                <!-- Cột: Sân -->
+                                <div class="col-md-3">
+                                    <span style="color: rgb(40, 121, 175); font-weight: bold;">{{ $activity->field->name }}</span>
+                                </div>
+
+                                <!-- Cột: Thời gian -->
+                                <div class="col-md-3">
+                                    <span style="color: #6c757d;">lúc {{ $activity->created_at->format('H:i d/m/Y') }}</span>
+                                </div>
+                            </div>
+                            @if ($activity->reservation_id)
+                                </a>
+                            @endif
+                        @endforeach
                     </ul>
                 </div>
             </div>

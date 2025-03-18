@@ -78,6 +78,11 @@
                                     <i class="fas fa-key me-4"></i>Đổi mật khẩu
                                 </a>
                             @endif
+                            @if(Auth::user()->role == 'field_owner') 
+                            <a href="{{ route('admin.index') }}" class="dropdown-item">
+                                <i class="fas fa-tachometer-alt me-4"></i>Đến trang quản lý
+                            </a>
+                            @endif
                             <a href="javascript:void(0);" class="dropdown-item" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                              <i class="fas fa-sign-out-alt me-4"></i>Đăng xuất
                             </a>

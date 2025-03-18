@@ -1,22 +1,22 @@
 @extends('layouts.app')
-@section('title', 'Xác nhận đặt sân')
+@section('title', 'Xác nhận thông tin đặt sân')
 
 @section('content')
 <div class="container-fluid bg-breadcrumb">
     <div class="container text-center custom-header" style="max-width: 900px;">
-        <h4 class="text-white display-4 wow fadeInDown" data-wow-delay="0.1s">Xác nhận đặt sân</h4>
+        <h4 class="text-white display-4 wow fadeInDown" data-wow-delay="0.1s">Xác nhận thông tin đặt sân</h4>
         <ol class="breadcrumb d-flex justify-content-center mb-0 wow fadeInDown" data-wow-delay="0.3s">
             <li class="breadcrumb-item"><a href="{{ route('home') }}">Trang chủ</a></li>
-            <li class="breadcrumb-item active text-primary">Xác nhận đặt sân</li>
+            <li class="breadcrumb-item active text-primary">Xác nhận thông tin đặt sân</li>
         </ol>    
     </div>
 </div>
 <div class="container mt-3">
     <div class="row justify-content-center">
-        <div class="col-md-6">
+        <div class="col-md-8">
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
-                    <h4 class="mb-3">Thông tin đặt sân:</h4>
+                    <h4 class="mb-3 fw-bold text-center">Thông tin đặt sân</h4>
                     <table class="table table-bordered table-striped">
                         <tbody>
                             <tr>
@@ -65,7 +65,7 @@
                             </tr>
                             <tr>
                                 <td><strong>Thành tiền:</strong></td>
-                                <td><strong>{{ number_format($totalPrice, 0, ',', '.') }} VND</strong></td>
+                                <td class="text-danger fw-bold"><strong>{{ number_format($totalPrice, 0, ',', '.') }}đ</strong></td>
                             </tr>
                         </tbody>
                     </table>
@@ -82,7 +82,7 @@
 
                         <div class="d-flex justify-content-end mt-4">
                             <button type="button" class="btn btn-secondary mx-2" onclick="goBack()">Quay lại</button>
-                            <button type="submit" class="btn btn-success">Xác nhận đặt sân</button>
+                            <button type="submit" class="btn btn-success">Xác nhận thông tin</button>
                         </div>
                     </form>
                 </div>

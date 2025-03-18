@@ -41,6 +41,10 @@
             <h4 class="text-center mt-2"><strong>{{ $field->name }}</strong></h4>
             <table class="table table-bordered table-striped">
                 <tr>
+                    <th>Loại sân</th>
+                    <td>{{ $field->fieldType->name}}</td>
+                </tr>
+                <tr>
                     <th>Địa chỉ</th>
                     <td>
                         <a href="https://www.google.com/maps?q={{ urlencode($field->location) }}" target="_blank" style="color: inherit;">

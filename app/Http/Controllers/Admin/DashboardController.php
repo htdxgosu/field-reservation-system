@@ -24,7 +24,6 @@ class DashboardController extends Controller
         // Lấy tổng số người dùng
         $user = Auth::user();
         $fields = $user->fields;
-        $userCount = Reservation::whereIn('field_id', $fields->pluck('id'))->distinct('user_id')->count();
         $reservationCount = Reservation::whereIn('field_id', $fields->pluck('id'))->count();
         $reservationCountToday = Reservation::whereIn('field_id', $fields->pluck('id'))
                                      ->whereDate('created_at', today())  
@@ -32,7 +31,11 @@ class DashboardController extends Controller
         $reservationPendingCount = Reservation::whereIn('field_id', $fields->pluck('id'))
             ->where('status', 'chờ xác nhận')  
             ->count();
-
+        $reservationMatchTodayCount = Reservation::whereIn('field_id', $fields->pluck('id'))
+            ->where('status', 'đã xác nhận') // Chỉ lấy đơn đã xác nhận
+            ->whereDate('start_time', today()) // Lấy đơn có ngày thi đấu là hôm nay
+            ->count();
+        
         $recentActivities = ActivityLog::with('user', 'field')
         ->whereIn('action', ['đặt', 'xác nhận đặt', 'hủy đặt','đánh giá'])
         ->whereHas('field', function($query) use ($user) {
@@ -84,8 +87,8 @@ class DashboardController extends Controller
         }
             
         // Trả về view admin.index với các dữ liệu
-        return view('admin.index', compact('user','userCount', 'reservationCount', 'fields', 'recentActivities',
-    'reservationCountToday','reservationPendingCount'));
+        return view('admin.index', compact('user','reservationMatchTodayCount', 'reservationCount', 'fields', 'recentActivities',
+        'reservationCountToday','reservationPendingCount'));
     }
 }
 
