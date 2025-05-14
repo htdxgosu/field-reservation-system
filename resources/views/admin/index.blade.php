@@ -92,49 +92,50 @@
                 <div class="card-body">
                     <ul>
                         @foreach ($recentActivities as $activity)
-                            @if ($activity->reservation_id)
-                                <a href="{{ route('admin.reservations.show', $activity->reservation_id) }}" 
-                                style="text-decoration: none; color: inherit;">
-                            @endif
-                            <div class="row py-2 border-bottom align-items-center">
-                                <!-- Cột: Người dùng -->
-                                <div class="col-md-3">
-                                    <span style="font-weight: bold;">{{ $activity->user->name }}</span>
-                                </div>
+                            @php
+                                $link = $activity->reservation_id 
+                                    ? route('admin.reservations.show', $activity->reservation_id) 
+                                    : route('admin.fields.show', $activity->field_id);
+                            @endphp
 
-                                <!-- Cột: Hành động (màu theo trạng thái) -->
-                                <div class="col-md-3">
-                                    @switch($activity->action)
-                                        @case('đặt')
-                                            <span style="color: rgb(89, 203, 112); font-style: italic; font-weight: bold;">đã {{ $activity->action }}</span>
-                                            @break
-                                        @case('xác nhận đặt')
-                                            <span style="color: #17a2b8; font-style: italic; font-weight: bold;">đã {{ $activity->action }}</span>
-                                            @break
-                                        @case('hủy đặt')
-                                            <span style="color: #dc3545; font-style: italic; font-weight: bold;"> đã {{ $activity->action }}</span>
-                                            @break
-                                        @case('đánh giá')
-                                            <span style="color: #007bff; font-style: italic; font-weight: bold;"> đã {{ $activity->action }}</span>
-                                            @break
-                                        @default
-                                            <span style="color: #333; font-style: italic; font-weight: bold;">{{ $activity->action }}</span>
-                                    @endswitch
-                                </div>
+                            <a href="{{ $link }}" style="text-decoration: none; color: inherit; display: block;">
+                                <div class="row py-2 border-bottom align-items-center">
+                                    <!-- Cột: Người dùng -->
+                                    <div class="col-md-3">
+                                        <span style="font-weight: bold;">{{ $activity->user->name }}</span>
+                                    </div>
 
-                                <!-- Cột: Sân -->
-                                <div class="col-md-3">
-                                    <span style="color: rgb(40, 121, 175); font-weight: bold;">{{ $activity->field->name }}</span>
-                                </div>
+                                    <!-- Cột: Hành động (màu theo trạng thái) -->
+                                    <div class="col-md-3">
+                                        @switch($activity->action)
+                                            @case('đặt')
+                                                <span style="color: rgb(89, 203, 112); font-style: italic; font-weight: bold;">đã {{ $activity->action }}</span>
+                                                @break
+                                            @case('xác nhận đặt')
+                                                <span style="color: #17a2b8; font-style: italic; font-weight: bold;">đã {{ $activity->action }}</span>
+                                                @break
+                                            @case('hủy đặt')
+                                                <span style="color: #dc3545; font-style: italic; font-weight: bold;">đã {{ $activity->action }}</span>
+                                                @break
+                                            @case('đánh giá')
+                                                <span style="color: #007bff; font-style: italic; font-weight: bold;">đã {{ $activity->action }}</span>
+                                                @break
+                                            @default
+                                                <span style="color: #333; font-style: italic; font-weight: bold;">{{ $activity->action }}</span>
+                                        @endswitch
+                                    </div>
 
-                                <!-- Cột: Thời gian -->
-                                <div class="col-md-3">
-                                    <span style="color: #6c757d;">lúc {{ $activity->created_at->format('H:i d/m/Y') }}</span>
+                                    <!-- Cột: Sân -->
+                                    <div class="col-md-3">
+                                        <span style="color: rgb(40, 121, 175); font-weight: bold;">{{ $activity->field->name }}</span>
+                                    </div>
+
+                                    <!-- Cột: Thời gian -->
+                                    <div class="col-md-3">
+                                        <span style="color: #6c757d;">lúc {{ $activity->created_at->format('H:i d/m/Y') }}</span>
+                                    </div>
                                 </div>
-                            </div>
-                            @if ($activity->reservation_id)
-                                </a>
-                            @endif
+                            </a>
                         @endforeach
                     </ul>
                 </div>

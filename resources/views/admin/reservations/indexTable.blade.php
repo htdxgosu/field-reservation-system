@@ -22,7 +22,7 @@
         <i class="fas fa-calendar-alt"></i> Lịch thi đấu các sân ngày {{$dateFormatted}}
     </h3>
     
-    <div class="mb-4">
+    <div class="mb-2">
         <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#chooseFieldModal">
             Tạo đơn đặt sân
         </a>
@@ -49,6 +49,64 @@
             </div>
         </div>
     </div>
+    <div class="mb-2">
+        <a href="#" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#chooseStatusModal">
+            Cập nhật tình trạng sân hiện tại
+        </a>
+    </div>
+        <!-- Modal chọn sân để cập nhật tình trạng -->
+    <div class="modal fade" id="chooseStatusModal" tabindex="-1" aria-labelledby="chooseStatusModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="max-width:400px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="chooseStatusModalLabel">Chọn sân để cập nhật tình trạng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group">
+                        @foreach($fields as $field)
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#statusModal{{ $field->id }}">
+                                <li class="list-group-item">
+                                    {{ $field->name }}
+                                </li>
+                            </a>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    @foreach($fields as $field)
+        <!-- Modal hiển thị tình trạng sân -->
+        <div class="modal fade" id="statusModal{{ $field->id }}" tabindex="-1" aria-labelledby="statusModalLabel{{ $field->id }}" aria-hidden="true">
+            <div class="modal-dialog" style="max-width:400px">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="statusModalLabel{{ $field->id }}">
+                            {{ $field->name }}
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Tình trạng hiện tại:</strong></p>
+                       <div class="alert 
+                        {{ $field->availability === 'Đang sử dụng' ? 'alert-danger' : 'alert-info' }}">
+                        {{ $field->availability }}
+                    </div>
+                        <!-- Nút cập nhật (chuyển trạng thái) -->
+                        <form action="{{ route('fields.toggleStatus', $field->id) }}" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <button type="submit" class="btn btn-warning btn-sm">
+                                {{ $field->availability === 'Đang trống' ? 'Chuyển thành Đang sử dụng' : 'Chuyển thành Đang trống' }}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
+
     @foreach($fields as $field)
     <!-- Modal đặt sân cho từng sân -->
         <div class="modal fade" id="reserveModal{{ $field->id }}" tabindex="-1" aria-labelledby="reserveModalLabel{{ $field->id }}" aria-hidden="true">
@@ -156,6 +214,36 @@
     </div>
  </div>
 @endsection
+@push('scripts')
+    
+        @if(session('swal-type') && session('swal-message'))
+        <script>
+            Swal.fire({
+                icon: "{{ session('swal-type') }}",           
+                title: "{{ session('swal-message') }}",       
+                showConfirmButton: true,      
+                customClass: {
+        title: 'swal-title'  // Gán lớp CSS cho tiêu đề
+    }                                        
+            });
+            </script>
+        @endif
+
+        @if ($errors->any())
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Đã xảy ra lỗi',
+                html: `{!! implode('<br>', $errors->all()) !!}`, 
+                showConfirmButton: true,
+                customClass: {
+        title: 'swal-title'  // Gán lớp CSS cho tiêu đề
+    }
+            });
+            </script>
+        @endif
+   
+@endpush
 @push('scripts')
 <script src="{{ asset('js/admin/create-reservation.js') }}"></script>
 @endpush

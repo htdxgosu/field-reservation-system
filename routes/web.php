@@ -188,6 +188,7 @@ Route::middleware([CheckFieldOwner::class])->prefix('admin')->group(function () 
     Route::get('/reservations/{id}/invoice', [AdminReservationController::class, 'printInvoice'])->name('admin.reservations.invoice');
     Route::post('/confirm-reservation', [AdminReservationController::class, 'confirmReservationAdmin'])->name('confirm-reservation-admin');
     Route::post('/store-reservation', [AdminReservationController::class, 'store'])->name('admin.reservations.store');
+    Route::put('/fields/{id}/toggle-status', [AdminFieldController::class, 'toggleStatus'])->name('fields.toggleStatus');
 
     //
     Route::get('/revenue/time', [RevenueController::class, 'time'])->name('admin.revenue.time');

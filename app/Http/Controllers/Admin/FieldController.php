@@ -375,6 +375,20 @@ class FieldController extends Controller
                 'swal-message' => 'Sân bóng đã được cập nhật thành công!'
             ]);
         }  
+    public function toggleStatus($id)
+    {
+        $field = Field::findOrFail($id);
+
+        if ($field->availability === 'Đang trống') {
+            $field->availability = 'Đang sử dụng';
+        } elseif ($field->availability === 'Đang sử dụng') {
+            $field->availability = 'Đang trống';
+        }
+
+        $field->save();
+
+        return redirect()->back()->with('swal-type', 'success')->with('swal-message', 'Cập nhật tình trạng sân thành công!');
+    }
 
 }
 

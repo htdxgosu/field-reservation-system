@@ -52,7 +52,6 @@ class ReviewController extends Controller
     {
         // Xác thực dữ liệu gửi lên
         $validator = Validator::make($request->all(), [
-            'reservationId' => 'required|integer|exists:reservations,id',
             'fieldId' => 'required|integer|exists:fields,id',
             'userId' => 'required|integer|exists:users,id', 
             'rating' => 'required|integer|min:1|max:5', 
@@ -67,12 +66,10 @@ class ReviewController extends Controller
         $review = new Review();
         $review->field_id = $request->input('fieldId');
         $review->user_id = $request->input('userId');
-        $review->reservation_id  = $request->input('reservationId');
         $review->rating = $request->input('rating');
         $review->comment = $request->input('comment');
         $review->save();
         ActivityLog::create([
-            'reservation_id' => $review->reservation->id,
             'user_id' => $review->user_id,
             'field_id' => $review->field_id,
             'action' => 'đánh giá',

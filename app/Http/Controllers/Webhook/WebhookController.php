@@ -26,9 +26,6 @@ class WebhookController extends Controller
         if ($intent == 'BestRatedFields') {
             return $this->getBestRatedFields(); 
         }
-        if ($intent == 'Sân đánh giá thấp') {
-            return $this->getWorstRatedFields(); 
-        }
         if ($intent == 'MostBookedFields') {
             return $this->getMostBookedFields(); 
         }
@@ -123,37 +120,39 @@ class WebhookController extends Controller
             'fulfillmentText' => $randomResponse
         ]);
     }
-        private function getFieldTypes()
-    {
-        // Lấy danh sách các loại sân từ cơ sở dữ liệu
-        $fieldTypes = FieldType::all(); // Giả sử bạn có bảng FieldType
+    private function getFieldTypes()
+{
+    $fieldTypes = FieldType::all();
 
-        // Kiểm tra nếu có loại sân nào
-        if ($fieldTypes->isEmpty()) {
-            return response()->json([
-                'fulfillmentText' => 'Hiện tại không có loại sân bóng nào trong hệ thống.'
-            ]);
-        }
-
-        $responses = [
-            'Hệ thống của chúng tôi hiện có các loại sân bóng như:',
-            'Chúng tôi cung cấp các loại sân bóng sau:',
-            'Dưới đây là các loại sân bóng có sẵn trong hệ thống:',
-            'Các loại sân bóng mà chúng tôi cung cấp bao gồm:',
-        ];
-        
-        // Thêm các loại sân vào câu trả lời
-        $fieldNames = $fieldTypes->pluck('name')->toArray();
-        $fieldList = implode(', ', $fieldNames);  // Hiển thị tất cả các loại sân
-        
-        // Chọn một câu trả lời ngẫu nhiên từ danh sách và thêm danh sách sân
-        $randomResponse = $responses[array_rand($responses)] . ' ' . $fieldList;
-        
-        // Trả về dữ liệu cho Dialogflow
+    if ($fieldTypes->isEmpty()) {
         return response()->json([
-            'fulfillmentText' => $randomResponse
+            'fulfillmentText' => 'Hiện tại không có loại sân bóng nào trong hệ thống.'
         ]);
     }
+
+    $responses = [
+        'Hệ thống của chúng tôi hiện có các loại sân bóng như:',
+        'Chúng tôi cung cấp các loại sân bóng sau:',
+        'Dưới đây là các loại sân bóng có sẵn trong hệ thống:',
+        'Các loại sân bóng mà chúng tôi cung cấp bao gồm:',
+    ];
+
+    $fieldNames = $fieldTypes->pluck('name')->toArray();
+
+    // Ghép thành chuỗi có dấu xuống dòng bằng ký tự đặc biệt
+    $fieldList = '';
+    foreach ($fieldNames as $name) {
+        $fieldList .= "• $name\n"; // Dùng • và \n để đẹp + dễ đọc
+    }
+
+    $randomResponse = $responses[array_rand($responses)] . "\n" . $fieldList;
+
+    return response()->json([
+        'fulfillmentText' => $randomResponse
+    ]);
+}
+
+    
     private function getFieldInfo($fieldName)
     {
         // Kiểm tra nếu tên sân rỗng
@@ -361,34 +360,7 @@ class WebhookController extends Controller
             'fulfillmentText' => $response
         ]);
     }
-    private function getWorstRatedFields()
-    {
-        $bestRatedFields = Field::with('reviews') // Lấy thông tin các đánh giá
-                                ->get()
-                                ->sortBy(function ($field) {
-                                    return $field->averageRating(); // Sắp xếp theo điểm đánh giá trung bình
-                                })
-                                ->take(3); // Lấy 5 sân tốt nhất
-
-        // Kiểm tra nếu có sân nào được đánh giá
-        if ($bestRatedFields->isEmpty()) {
-            $response = "Hiện tại không có sân nào có đánh giá thấp trong hệ thống.";
-        } else {
-            // Tạo chuỗi trả về danh sách các sân tốt nhất
-            $response = "Các sân có đánh giá thấp là:\n";
-            $count = 1; 
-            foreach ($bestRatedFields as $field) {
-                $averageRating = $field->averageRating(); 
-                $response .= "{$count}. {$field->name} - {$averageRating}/5 sao\n"; 
-                $count++; 
-            }
-        }
-
-        // Trả về thông tin cho Dialogflow
-        return response()->json([
-            'fulfillmentText' => $response
-        ]);
-    }
+    
     private function getFieldPrice($fieldName)
     {
         // Tìm sân theo tên

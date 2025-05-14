@@ -17,7 +17,7 @@ class ContactController extends Controller
                 'subject' => 'required|string|max:255',
                 'message' => 'required|string',
             ], [
-                'email.regex' => 'Địa chỉ email định dạng hợp lệ là xxx@gmail.com!',
+                'email.regex' => 'Địa chỉ email định dạng hợp lệ là abc@gmail.com!',
                 'phone.regex' => 'Số điện thoại phải bắt đầu bằng 0 và có 10 số!',
             ]);
             SendContactRequestEmail::dispatch(
