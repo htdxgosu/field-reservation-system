@@ -12,6 +12,7 @@ use App\Http\Controllers\User\NewsController as UserNewsController;
 use App\Http\Controllers\Login\AuthController as LoginAuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\RevenueController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\FieldController as AdminFieldController;
@@ -159,9 +160,18 @@ Route::middleware([CheckFieldOwner::class])->prefix('admin')->group(function () 
     Route::get('/profile', [ProfileController::class, 'index'])->name('admin.profile.index');
     Route::post('/profile/update', [ProfileController::class, 'update'])->name('admin.profile.update');
     Route::post('/profile/change-password', [ProfileController::class, 'changePassword'])->name('admin.profile.update-password');
+    Route::post('/profile/bank-info', [ProfileController::class, 'updateBankInfo'])
+     ->name('admin.profile.updateBankInfo');
 
     // Route hiển thị danh sách người dùng
     Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+    //
+    Route::get('/services', [ServiceController::class, 'index'])->name('admin.services.index');
+    Route::post('/services', [ServiceController::class, 'store'])->name('admin.services.store');
+    Route::delete('/services/{service}', [ServiceController::class, 'destroy'])->name('services.destroy');
+    Route::put('services/{id}/activate', [ServiceController::class, 'activate'])->name('services.activate');
+    Route::put('services/{id}', [ServiceController::class, 'update'])->name('admin.services.update');
+
     //
     Route::post('/reviews/{review}/reply', [ReviewController::class, 'reply'])->name('reviews.reply');
     Route::delete('/reviews/{review}/reply', [ReviewController::class, 'deleteReply'])->name('reviews.delete_reply');
@@ -179,6 +189,7 @@ Route::middleware([CheckFieldOwner::class])->prefix('admin')->group(function () 
     Route::get('/reservations', [AdminReservationController::class, 'index'])->name('admin.reservations.index');
     Route::get('/reservations-table', [AdminReservationController::class, 'indexTable'])->name('admin.reservations.indexTable');
     Route::get('/reservations/{reservation}', [AdminReservationController::class, 'show'])->name('admin.reservations.show');
+    Route::post('/reservations/{reservation}/add-service', [AdminReservationController::class, 'addService'])->name('admin.reservations.storeService');
     Route::delete('/reservations/cancel/{id}', [AdminReservationController::class, 'cancel'])->name('admin.reservations.cancel');
     Route::get('/reservations/confirm/{id}', [AdminReservationController::class, 'confirm'])->name('admin.reservations.confirm');
     Route::get('/reservations/{id}/edit', [AdminReservationController::class, 'edit'])->name('admin.reservations.edit');

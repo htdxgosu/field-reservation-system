@@ -120,6 +120,9 @@
                                             @case('đánh giá')
                                                 <span style="color: #007bff; font-style: italic; font-weight: bold;">đã {{ $activity->action }}</span>
                                                 @break
+                                            @case('hủy tự động do không xác nhận')
+                                        <span style="color: #dc3545; font-style: italic; font-weight: bold;">bị {{ $activity->action }}</span>
+                                        @break    
                                             @default
                                                 <span style="color: #333; font-style: italic; font-weight: bold;">{{ $activity->action }}</span>
                                         @endswitch

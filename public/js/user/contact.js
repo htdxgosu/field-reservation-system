@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
-    document.querySelector('form').addEventListener('submit', async function (e) {
+     const form = document.getElementById('contactForm');
+        form.addEventListener('submit', async function (e) {
         e.preventDefault(); // Ngăn form gửi theo cách mặc định
 
         // Lấy dữ liệu từ các input

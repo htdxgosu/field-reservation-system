@@ -10,7 +10,7 @@ class FieldOwner extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'address', 'identity', 'business_license', 'status'
+        'user_id', 'address', 'identity', 'business_license', 'status','bank_id','bank_account',
     ];
 
     // Quan hệ với User

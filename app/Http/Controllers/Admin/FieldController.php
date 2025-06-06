@@ -150,7 +150,7 @@ class FieldController extends Controller
                     ->withInput()
                     ->withErrors(['peak_price_per_hour' => 'Giá sau 17h phải lớn hơn giá thường.']);
             }
-        
+           $targetPath = '/home/quanlyda/public_html/img/field';
             // Xử lý ảnh sân chính
             $imagePath = null;
             if ($request->hasFile('image_url')) {
@@ -159,7 +159,7 @@ class FieldController extends Controller
 
                 // Lưu ảnh vào thư mục public/img/field
                 $imagePath = 'img/field/' . $imageName;
-                $request->file('image_url')->move(public_path('img/field'), $imageName);
+               $request->file('image_url')->move($targetPath, $imageName);
             }
 
             // Xử lý ảnh sân thứ hai nếu có
@@ -170,7 +170,7 @@ class FieldController extends Controller
 
                 // Lưu ảnh thứ hai vào thư mục public/img/field
                 $secondImagePath = 'img/field/' . $secondImageName;
-                $request->file('second_image_url')->move(public_path('img/field'), $secondImageName);
+                 $request->file('second_image_url')->move($targetPath, $secondImageName);
             }
 
             // Tạo sân bóng mới
@@ -211,14 +211,19 @@ class FieldController extends Controller
                     ->with('swal-message', 'Không thể xóa sân bóng vì có đơn đặt sân liên quan.');
             }
          
-            if ($field->image_url && file_exists(public_path($field->image_url))) {
-                unlink(public_path($field->image_url)); // Xóa ảnh chính
+            // Đường dẫn tuyệt đối đến thư mục public_html/img/field
+            $targetPath = '/home/quanlyda/public_html'; // Thay username bằng tên thật
+            
+            // Kiểm tra và xóa ảnh chính nếu tồn tại
+            if ($field->image_url && file_exists($targetPath . '/' . $field->image_url)) {
+                unlink($targetPath . '/' . $field->image_url); // Xóa ảnh chính
+            }
+            
+            // Kiểm tra và xóa ảnh phụ nếu tồn tại
+            if ($field->second_image_url && file_exists($targetPath . '/' . $field->second_image_url)) {
+                unlink($targetPath . '/' . $field->second_image_url); // Xóa ảnh phụ
             }
 
-            // Kiểm tra nếu ảnh phụ tồn tại, xóa ảnh khỏi thư mục
-            if ($field->second_image_url && file_exists(public_path($field->second_image_url))) {
-                unlink(public_path($field->second_image_url)); // Xóa ảnh phụ
-            }
 
             $field->delete();
 
@@ -298,71 +303,70 @@ class FieldController extends Controller
             $field->opening_time = $request->opening_time;
             $field->closing_time = $request->closing_time;
         
-            // Xử lý ảnh sân chính
-            $imagePath = null;
-            if ($request->hasFile('image_url')) {
-                // Tạo tên tệp duy nhất bằng cách thêm timestamp và một chuỗi ngẫu nhiên vào tên
-                $imageName = '1_' . time() . '_' . $request->file('image_url')->getClientOriginalName();
-                // Lưu ảnh vào thư mục public/img/field
-                $imagePath = $request->file('image_url')->move(public_path('img/field'), $imageName);
-                $imagePath = 'img/field/' . $imageName;
-            
-                // Xóa ảnh cũ nếu có
-                $oldImagePath = public_path($field->image_url);
-                if ($field->image_url && file_exists($oldImagePath) && is_file($oldImagePath)) {
-                    try {
-                        unlink($oldImagePath); // Xóa ảnh cũ
-                    } catch (\Exception $e) {
-                        // Xử lý khi không thể xóa ảnh cũ
-                    }
-                }
-            }
-                
-                    
-            // Xử lý ảnh phụ nếu có
-        $secondImagePath = null;
-        if ($request->hasFile('second_image_url')) {
-            // Tạo tên tệp duy nhất cho ảnh thứ 2
-            $secondImageName ='2_' . time() . '_' . $request->file('second_image_url')->getClientOriginalName();
-            // Lưu ảnh thứ hai vào thư mục public/img
-            $secondImagePath = $request->file('second_image_url')->move(public_path('img/field'), $secondImageName);
-            $secondImagePath = 'img/field/' . $secondImageName;
+            // Đường dẫn tuyệt đối tới public_html
+$targetPath = '/home/quanlyda/public_html';
 
-            // Xóa ảnh cũ nếu có
-            $oldSecondImagePath = public_path($field->second_image_url);
-            if ($field->second_image_url && file_exists($oldSecondImagePath) && is_file($oldSecondImagePath)) {
-                try {
-                    unlink($oldSecondImagePath); // Xóa ảnh cũ
-                } catch (\Exception $e) {
-                    // Log error nếu cần
-                    
-                }
-            }
-        } elseif ($request->has('delete_second_image')) {
-            // Nếu có chọn xóa ảnh phụ, xóa ảnh cũ
-            $oldSecondImagePath = public_path($field->second_image_url);
-            if ($field->second_image_url && file_exists($oldSecondImagePath) && is_file($oldSecondImagePath)) {
-                try {
-                    unlink($oldSecondImagePath); // Xóa ảnh cũ
-                    $secondImagePath = null; // Đặt lại trường ảnh phụ thành null
-                } catch (\Exception $e) {
-                    // Log error nếu cần
-                
-                }
-            }
-        }
+// ====== Xử lý ảnh chính ======
+$imagePath = null;
+if ($request->hasFile('image_url')) {
+    $imageName = '1_' . time() . '_' . $request->file('image_url')->getClientOriginalName();
+    $relativePath = 'img/field/' . $imageName;
 
-        // Cập nhật trường `image_url` và `second_image_url` nếu ảnh mới có
-        if ($imagePath) {
-            $field->image_url = $imagePath;
-        }
+    // Di chuyển ảnh mới vào đúng thư mục trên host
+    $request->file('image_url')->move($targetPath . '/img/field', $imageName);
+    $imagePath = $relativePath;
 
-        if ($secondImagePath) {
-            $field->second_image_url = $secondImagePath;
-        } elseif ($request->has('delete_second_image')) {
-            // Chỉ đặt null nếu người dùng chọn xóa ảnh
-            $field->second_image_url = null;
+    // Xóa ảnh cũ nếu có
+    if ($field->image_url && file_exists($targetPath . '/' . $field->image_url)) {
+        try {
+            unlink($targetPath . '/' . $field->image_url);
+        } catch (\Exception $e) {
+            // Ghi log nếu cần
         }
+    }
+}
+
+// ====== Xử lý ảnh phụ ======
+$secondImagePath = null;
+if ($request->hasFile('second_image_url')) {
+    $secondImageName = '2_' . time() . '_' . $request->file('second_image_url')->getClientOriginalName();
+    $relativeSecondPath = 'img/field/' . $secondImageName;
+
+    // Di chuyển ảnh phụ vào đúng thư mục
+    $request->file('second_image_url')->move($targetPath . '/img/field', $secondImageName);
+    $secondImagePath = $relativeSecondPath;
+
+    // Xóa ảnh phụ cũ nếu có
+    if ($field->second_image_url && file_exists($targetPath . '/' . $field->second_image_url)) {
+        try {
+            unlink($targetPath . '/' . $field->second_image_url);
+        } catch (\Exception $e) {
+            // Ghi log nếu cần
+        }
+    }
+} elseif ($request->has('delete_second_image')) {
+    // Nếu có yêu cầu xóa ảnh phụ
+    if ($field->second_image_url && file_exists($targetPath . '/' . $field->second_image_url)) {
+        try {
+            unlink($targetPath . '/' . $field->second_image_url);
+            $secondImagePath = null;
+        } catch (\Exception $e) {
+            // Ghi log nếu cần
+        }
+    }
+}
+
+// ====== Cập nhật vào DB nếu có ======
+if ($imagePath) {
+    $field->image_url = $imagePath;
+}
+
+if ($secondImagePath) {
+    $field->second_image_url = $secondImagePath;
+} elseif ($request->has('delete_second_image')) {
+    $field->second_image_url = null;
+}
+
         
 
         // Lưu thông tin sân bóng vào cơ sở dữ liệu

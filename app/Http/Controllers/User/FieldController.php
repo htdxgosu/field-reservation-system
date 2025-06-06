@@ -120,7 +120,7 @@ class FieldController extends Controller
     
     foreach ($reservations as $reservation) {
         $start = Carbon::parse($reservation->start_time);
-        $duration = $reservation->duration->duration;  // Duration tính bằng phút
+       $duration = (int) $reservation->duration->duration;  // Duration tính bằng phút
         $end = $start->copy()->addMinutes($duration);  // Tính giờ kết thúc từ start_time và duration
     
         if ($start->gt($lastEndTime)) {

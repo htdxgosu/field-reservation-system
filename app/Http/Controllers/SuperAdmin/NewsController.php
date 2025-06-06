@@ -33,14 +33,23 @@ class NewsController extends Controller
         $news->title = $request->title;
         $news->content = $request->content;
 
-        if ($request->hasFile('image')) {
-            // Tạo tên tệp duy nhất bằng cách thêm timestamp vào tên
-            $imageName = time() . '_' . $request->file('image')->getClientOriginalName();
-            // Lưu ảnh vào thư mục public/img
-            $imagePath = $request->file('image')->move(public_path('img/news'), $imageName);
-            $imagePath = 'img/news/' . $imageName;
-            $news->image=$imagePath;
-        }
+       if ($request->hasFile('image')) {
+        // Tạo tên tệp duy nhất
+        $imageName = time() . '_' . $request->file('image')->getClientOriginalName();
+        
+        // Đường dẫn lưu ảnh tuyệt đối
+        $targetPath = '/home/quanlyda/public_html/img/news';
+        
+        // Đường dẫn tương đối để lưu vào DB
+        $relativePath = 'img/news/' . $imageName;
+    
+        // Di chuyển ảnh
+        $request->file('image')->move($targetPath, $imageName);
+    
+        // Gán đường dẫn tương đối vào DB
+        $news->image = $relativePath;
+    }
+
 
         $news->save();
 
@@ -54,9 +63,10 @@ class NewsController extends Controller
     public function destroy($id)
     {
         $news = News::findOrFail($id);
-        if ($news->image && file_exists(public_path($news->image))) {
-            unlink(public_path($news->image));
-        }
+       if ($news->image && file_exists('/home/quanlyda/public_html/' . $news->image)) {
+    unlink('/home/quanlyda/public_html/' . $news->image);
+}
+
         $news->delete();
         return redirect()->route('admin.news.index')
             ->with('swal-type', 'success')
@@ -85,19 +95,24 @@ class NewsController extends Controller
     $news->title = $validatedData['title'];
     $news->content = $validatedData['content'];
 
-    // Xử lý ảnh nếu người dùng upload ảnh mới
-    if ($request->hasFile('image')) {
-        // Xóa ảnh cũ nếu có
-        if ($news->image && file_exists(public_path($news->image))) {
-            unlink(public_path($news->image));
-        }
+    $targetPath = '/home/quanlyda/public_html/img/news';
 
-        $imageName = time() . '_' . $request->file('image')->getClientOriginalName();
-        // Lưu ảnh vào thư mục public/img
-        $imagePath = $request->file('image')->move(public_path('img/news'), $imageName);
-        $imagePath = 'img/news/' . $imageName;
-        $news->image=$imagePath;
+// Xử lý ảnh nếu người dùng upload ảnh mới
+if ($request->hasFile('image')) {
+    // Xóa ảnh cũ nếu có
+    if ($news->image && file_exists('/home/quanlyda/public_html/' . $news->image)) {
+        unlink('/home/quanlyda/public_html/' . $news->image);
     }
+
+    // Tạo tên file mới
+    $imageName = time() . '_' . $request->file('image')->getClientOriginalName();
+
+    // Di chuyển ảnh đến thư mục đích
+    $request->file('image')->move($targetPath, $imageName);
+
+    // Lưu đường dẫn tương đối vào DB
+    $news->image = 'img/news/' . $imageName;
+}
 
     // Lưu bản ghi
     $news->save();

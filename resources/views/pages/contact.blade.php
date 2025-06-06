@@ -26,7 +26,7 @@
                     <div class="col-xl-5 wow fadeInUp" data-wow-delay="0.1s">
                         <div class="bg-secondary p-5 rounded">
                             <h5 class="text-primary text-center mb-4">Xin Hân Hạnh Được Hỗ Trợ Quý Khách</h5>
-                            <form>
+                            <form id="contactForm">
                                 <div class="row g-4">
                                     <div class="col-12">
                                         <div class="form-floating">

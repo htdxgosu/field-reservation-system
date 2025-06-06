@@ -41,8 +41,67 @@
                             @break
                     @endswitch
                 </p>
+                  <p><strong>Giá sân: {{ number_format($reservation->original_amount, 0, ',', '.') }}đ </strong> </p>
                 <p><strong>Thời gian đặt:</strong> {{ \Carbon\Carbon::parse($reservation->created_at)->format('d/m/Y H:i') }}</p>
                 <hr>
+                <p><strong>Dịch vụ khác:</strong></p>
+                
+                @php
+                    $otherServices = $reservation->services ?? collect();
+                @endphp
+                
+              @if ($otherServices->isEmpty())
+                    <p class="text-muted">Không sử dụng dịch vụ khác</p>
+                @else
+                    <ul class="mb-3">
+                        @foreach ($otherServices as $service)
+                            <li>
+                                {{ $service->pivot->service_name }} - {{ $service->pivot->quantity }} x 
+                                {{ number_format($service->pivot->unit_price, 0, ',', '.') }}đ 
+                                = <strong>{{ number_format($service->pivot->total_price, 0, ',', '.') }}đ</strong>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+                @if($reservation->status === 'đã xác nhận')
+               <!-- Nút Thêm Dịch Vụ -->
+                <button class="btn btn-sm btn-outline-primary mt-2" data-bs-toggle="modal" data-bs-target="#addServiceModal">
+                    <i class="fas fa-plus"></i> Thêm dịch vụ
+                </button>
+                  @endif
+                <!-- Modal Thêm Dịch Vụ -->
+                <div class="modal fade" id="addServiceModal" tabindex="-1" aria-labelledby="addServiceModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <form method="POST" action="{{ route('admin.reservations.storeService', $reservation->id) }}">
+                        @csrf
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addServiceModalLabel">Thêm dịch vụ khác</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="service_id" class="form-label">Chọn dịch vụ</label>
+                                    <select name="service_id" id="service_id" class="form-select" required>
+                                        @foreach ($services as $service)
+                                            <option value="{{ $service->id }}">{{ $service->name }} ({{ number_format($service->price, 0, ',', '.') }}đ)</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="quantity" class="form-label">Số lượng</label>
+                                    <input type="number" name="quantity" id="quantity" class="form-control" min="1" value="1" required>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                <button type="submit" class="btn btn-primary">Thêm</button>
+                            </div>
+                        </div>
+                    </form>
+                  </div>
+                </div>
+                 <hr>
                 <p><strong>Thành tiền: <span class="text-danger fw-bold">{{ number_format($reservation->total_amount, 0, ',', '.') }} VNĐ</span></strong> </p>
                 <!-- Hành động xác nhận và hủy đơn -->
                 @if($reservation->status == 'chờ xác nhận')

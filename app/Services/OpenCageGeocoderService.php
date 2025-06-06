@@ -32,7 +32,6 @@ class OpenCageGeocoderService
             $location = $body['results'][0]['geometry'];
             return $location; // Trả về latitude và longitude
         } else {
-            // Nếu không tìm thấy kết quả hoặc không có phần tử đầu tiên, trả về null hoặc một thông báo lỗi
             return null;
         }
         

@@ -30,6 +30,8 @@ class ProfileController extends Controller
             'email' => 'required|email|regex:/^[a-zA-Z0-9._%+-]{3,}@gmail\.com$/|max:255',
             'phone' => 'required|regex:/^0\d{9}$/|unique:users,phone,' . $user->id,
             'address' => 'required|string|max:255',  
+             'bank_id' => 'nullable|string|max:10',
+             'bank_account' => 'nullable|string|max:30',
         ], [
             'name.required' => 'Tên không được để trống.',
             'email.required' => 'Email không được để trống.',
@@ -51,10 +53,29 @@ class ProfileController extends Controller
         // Cập nhật thông tin trong bảng field_owners
         $fieldOwner->update([
             'address' => $request->input('address'), // Cập nhật địa chỉ
+            'bank_id' => $request->input('bank_id'),
+            'bank_account' => $request->input('bank_account'),
         ]);
     
         return redirect()->route('admin.profile.index')->with('swal-type', 'success')->with('swal-message', 'Cập nhật thành công');
     }
+        public function updateBankInfo(Request $request)
+    {
+        $request->validate([
+            'bank_id' => 'required|string|max:10',
+            'bank_account' => 'required|string|max:30',
+        ]);
+    
+        $user = Auth::user();
+        $fieldOwner = $user->fieldOwner;
+        $fieldOwner->update([
+            'bank_id' => $request->bank_id,
+            'bank_account' => $request->bank_account,
+        ]);
+    
+        return redirect()->route('admin.profile.index')->with('swal-type', 'success')->with('swal-message', 'Đăng kí thành công');
+    }
+
     public function changePassword(Request $request)
     {
         // Xác thực dữ liệu nhập vào

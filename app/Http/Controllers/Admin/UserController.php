@@ -41,12 +41,13 @@ class UserController extends Controller
     })
     ->orderBy('created_at', 'desc')
     ->paginate(15);
+    
 
     // Kiểm tra nếu không có kết quả tìm kiếm
     $noResults = $users->isEmpty();
     
     // Trả về view và gửi dữ liệu đến view
-    return view('admin.users.index', compact('users', 'noResults'));
+    return view('admin.users.index', compact('ownerId','users','noResults'));
 }
 
 }

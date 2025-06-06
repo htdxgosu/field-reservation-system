@@ -70,7 +70,11 @@
         <tbody>
         @foreach ($invoices as $invoice)
             <tr>
-                <td>{{ $invoice->invoice_code }}</td>
+                <td>
+                    <a href="{{ route('admin.reservations.invoice', $invoice->reservation_id) }}">
+                        {{ $invoice->invoice_code }}
+                    </a>
+                </td>
                 <td>{{ $invoice->user->name }}</td>
                 <td>{{ $invoice->field->name }}</td>
                 <td><span class="text-danger fw-bold">{{ number_format($invoice->total_amount, 0, ',', '.') }} VNĐ</span></td>

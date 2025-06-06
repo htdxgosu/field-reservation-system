@@ -33,7 +33,8 @@
                 <th>SDT</th>
                 <th>Email</th>
                 <th>Số lần đặt sân</th>
-                <th>Số lần không xác nhận</th>
+                <th>Số lần hoàn tất</th>
+                <th>Tổng tiền đã chi</th>
                 <th>Tỉ lệ hủy đặt</th>
             </tr>
         </thead>
@@ -46,7 +47,8 @@
                     <td>{{ $user->phone }}</td>
                     <td>{{ $user->email }}</td>
                     <td>{{ $user->total_reservations }} lần</td>
-                    <td>{{ $user->pending_reservations }} lần</td>
+                      <td>{{ $user->complete_reservations }} lần</td>
+                    <td><strong>{{ number_format($user->getTotalSpentByCustomer($ownerId), 0, ',', '.') }} đ</strong></td>
                     <td class="{{ $user->cancellation_rate > 15 ? 'text-danger fw-bold' : '' }}">
                         {{ $user->cancellation_rate }}%
                     </td>

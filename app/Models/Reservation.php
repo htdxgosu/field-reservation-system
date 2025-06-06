@@ -11,7 +11,7 @@ class Reservation extends Model
 
     // Các trường có thể mass-assign (được điền vào trong hàm create hoặc update)
     protected $fillable = [
-        'user_id', 'field_id', 'start_time', 'duration_id', 'status', 'note','total_amount',
+        'user_id', 'field_id', 'start_time', 'duration_id', 'status', 'note','total_amount','email_sent', 'original_amount', 
     ];
 
     // Mối quan hệ với bảng users (mỗi đặt sân thuộc một người dùng)
@@ -29,6 +29,12 @@ class Reservation extends Model
     {
         return $this->hasOne(Invoice::class);
     }
+      public function services()
+    {
+        return $this->belongsToMany(Service::class, 'reservation_services')
+                     ->withPivot('quantity', 'total_price', 'service_name', 'unit_price')
+                    ->withTimestamps();
+    }
     // Quan hệ với bảng durations
     public function duration()
     {
@@ -38,7 +44,7 @@ class Reservation extends Model
     {
         $startTime = \Carbon\Carbon::parse($this->start_time);
         $duration = \App\Models\Duration::find($this->duration_id); 
-        $durationInMinutes = $duration->duration;
+        $durationInMinutes = (int) $duration->duration;
         $endTime = $startTime->addMinutes($durationInMinutes);
 
         return $endTime->format('d/m/Y H:i'); 

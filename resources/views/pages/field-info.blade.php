@@ -91,6 +91,36 @@
                         <i class="fab fa-weixin" style="margin-right: 8px;"></i> Zalo
                     </button>
                 </a>
+                 <!-- Nút Xem dịch vụ kèm theo -->
+                <button type="button" class="btn btn-warning mx-2 mb-2 fw-bold" data-bs-toggle="modal" data-bs-target="#serviceModal{{ $field->id }}">
+                    Dịch vụ
+                </button>
+                <!-- Modal danh sách dịch vụ -->
+                    <div class="modal fade" id="serviceModal{{ $field->id }}" tabindex="-1" aria-labelledby="serviceModalLabel{{ $field->id }}" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="serviceModalLabel{{ $field->id }}">Dịch vụ kèm theo</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                          </div>
+                          <div class="modal-body">
+                            @php
+                              $services = $field->owner->services->where('is_active', true);
+                            @endphp
+                    
+                            @if ($services->isEmpty())
+                              <p>Hiện chưa có dịch vụ nào.</p>
+                            @else
+                              <ul>
+                                @foreach ($services as $service)
+                                  <li>{{ $service->name }} – {{ number_format($service->price) }} đ</li>
+                                @endforeach
+                              </ul>
+                            @endif
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                 @auth
                     <button type="button" class="btn btn-success w-25 mb-2" data-bs-toggle="modal" data-bs-target="#reserveModal{{ $field->id }}">
                         Đặt sân

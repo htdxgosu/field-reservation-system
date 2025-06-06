@@ -32,12 +32,12 @@ class DashboardController extends Controller
             ->where('status', 'chờ xác nhận')  
             ->count();
         $reservationMatchTodayCount = Reservation::whereIn('field_id', $fields->pluck('id'))
-            ->where('status', 'đã xác nhận') // Chỉ lấy đơn đã xác nhận
+           ->whereIn('status', ['đã xác nhận', 'đã thanh toán'])
             ->whereDate('start_time', today()) // Lấy đơn có ngày thi đấu là hôm nay
             ->count();
         
         $recentActivities = ActivityLog::with('user', 'field')
-        ->whereIn('action', ['đặt', 'xác nhận đặt', 'hủy đặt','đánh giá'])
+        ->whereIn('action', ['đặt', 'xác nhận đặt', 'hủy đặt','đánh giá','hủy tự động do không xác nhận'])
         ->whereHas('field', function($query) use ($user) {
             $query->where('user_id', $user->id); 
         })
@@ -62,7 +62,7 @@ class DashboardController extends Controller
         $lastEndTime = $startOfDay;
         foreach ($reservations as $reservation) {
             $start = Carbon::parse($reservation->start_time);
-            $duration = $reservation->duration->duration;  // Duration tính bằng phút
+            $duration = (int) $reservation->duration->duration;  // Duration tính bằng phút
             $end = $start->copy()->addMinutes($duration);  // Tính giờ kết thúc từ start_time và duration
             if ($start->gt($lastEndTime)) {
                 // Thêm khoảng trống vào mảng

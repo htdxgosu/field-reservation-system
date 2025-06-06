@@ -78,7 +78,8 @@ class Field extends Model
             // Tính giờ bắt đầu và kết thúc của đơn đặt
             $start = Carbon::parse($reservation->start_time);
             $duration = $reservation->duration->duration;  // Duration tính bằng phút
-            $end = $start->copy()->addMinutes($duration);  // Tính giờ kết thúc
+           $end = $start->copy()->addMinutes((int) $duration);
+  // Tính giờ kết thúc
     
             if ($start->gt($lastEndTime)) {
                 // Thêm khoảng trống vào mảng

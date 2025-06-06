@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Reservation;
 use App\Models\Field;
+use App\Models\Service;
+use App\Models\ReservationService;
 use App\Models\Duration;
 use Illuminate\Http\Request;
 use App\Models\Invoice;
@@ -13,6 +15,7 @@ use App\Models\ActivityLog;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\SendReservationEmail;
+use Illuminate\Support\Facades\DB;
 
 
 class ReservationController extends Controller
@@ -70,8 +73,59 @@ class ReservationController extends Controller
     // Lấy thông tin chi tiết của đơn đặt sân
     $reservation = Reservation::with('field', 'user')->findOrFail($id);
     $reservation->end_time = $reservation->calculateEndTime(); 
-    return view('admin.reservations.show', compact('reservation'));
+    $ownerId = $reservation->field->user_id;
+
+   $services = Service::where('user_id', $ownerId)
+                   ->where('is_active', true) // hoặc: ->where('status', 1)
+                   ->get();
+    return view('admin.reservations.show', compact('reservation','services'));
 }
+public function addService(Request $request, Reservation $reservation)
+{
+    $request->validate([
+        'service_id' => 'required|exists:services,id',
+        'quantity' => 'required|integer|min:1',
+    ]);
+
+    $service = Service::findOrFail($request->service_id);
+    $quantity = $request->quantity;
+    $existingService = DB::table('reservation_services')
+        ->where('reservation_id', $reservation->id)
+        ->where('service_id', $service->id)
+        ->first();
+    if ($existingService) {
+       $newQuantity = $existingService->quantity + $quantity;
+        $newTotalPrice = $newQuantity * $service->price;
+         $newUnitPrice = $service->price;
+
+        DB::table('reservation_services')
+            ->where('reservation_id', $reservation->id)
+            ->where('service_id', $service->id)
+            ->update([
+                'quantity' => $newQuantity,
+                 'unit_price' => $newUnitPrice,  
+                  'service_name' => $service->name,
+                'total_price' => $newTotalPrice,
+                'updated_at' => now(),
+            ]);
+    } else {
+        // Nếu chưa có, thêm mới
+        $reservation->services()->attach($service->id, [
+            'quantity' => $quantity,
+            'total_price' => $quantity * $service->price,
+            'service_name' => $service->name,
+            'unit_price' => $service->price,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
+    $serviceTotal = ReservationService::where('reservation_id', $reservation->id)->sum('total_price');
+    $reservation->total_amount = $reservation->original_amount  + $serviceTotal;
+    $reservation->save();
+    return redirect()->back()->with('swal-type', 'success')
+        ->with('swal-message', 'Dịch vụ đã được thêm vào đơn.');
+}
+
 public function cancel($id)
 {
     $reservation = Reservation::findOrFail($id);
@@ -173,6 +227,7 @@ public function update(Request $request, $id)
     $totalPrice = round($totalPrice);
 
     // Cập nhật giá vào đơn đặt sân
+    $reservation->original_amount=$totalPrice;
     $reservation->total_amount = $totalPrice;
     $reservation->save();
 
@@ -199,7 +254,7 @@ public function markAsPaid($id)
     $invoice->total_amount = $reservation->total_amount;
     $invoice->save();
 
-    return redirect()->back()->with('swal-type', 'success')->with('swal-message', 'Đơn đã được thanh toán thành công!');
+    return redirect()->back()->with('swal-type', 'success')->with('swal-message', 'Đơn đã được xác nhận thanh toán thành công!');
 }
 public function printInvoice($id)
 {
@@ -245,7 +300,7 @@ public function printInvoice($id)
                     // Thêm các lịch đã đặt vào
                     foreach ($reservations as $reservation) {
                         $startTime = Carbon::parse($reservation->start_time)->format('H:i');
-                        $endTime = Carbon::parse($reservation->start_time)->addMinutes($reservation->duration->duration)->format('H:i');
+                        $endTime = Carbon::parse($reservation->start_time)  ->addMinutes((int) $reservation->duration->duration)->format('H:i');
                         $schedule[] = [
                             'start' => $startTime,
                             'end' => $endTime,
@@ -357,6 +412,7 @@ public function printInvoice($id)
             'start_time' => $startDateTime,
             'duration_id' => $duration->id,
             'note' => $validated['note'] ?? null,
+             'original_amount' => $validated['totalPrice'],
             'total_amount' => $validated['totalPrice'],
             'status' => 'đã xác nhận',
         ]);

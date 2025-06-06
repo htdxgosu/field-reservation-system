@@ -46,16 +46,35 @@
                             <td>{{ $reservation->duration->duration }} phút</td>
                         </tr>
                         <tr>
-                            <td><strong>Giá giờ thường:</strong></td>
-                            <td>{{ number_format($reservation->field->price_per_hour, 0, ',', '.') }} VNĐ/giờ</td>
+                            <td><strong>Tiền sân:</strong></td>
+                            <td>{{ number_format($reservation->original_amount, 0, ',', '.') }} đ</td>
                         </tr>
+                       <!-- Thêm Dịch vụ khác -->
+                        @php
+                            $otherServices = $reservation->services ?? collect();
+                        @endphp
+                        
                         <tr>
-                            <td><strong>Giá sau 17h:</strong></td>
-                            <td>{{ number_format($reservation->field->peak_price_per_hour, 0, ',', '.') }} VNĐ/giờ</td>
+                            <td><strong>Dịch vụ khác:</strong></td>
+                            <td>
+                                @if ($otherServices->isEmpty())
+                                    <span class="text-muted">Không sử dụng dịch vụ khác</span>
+                                @else
+                                    <ul class="mb-0 ps-0 list-unstyled">
+                                        @foreach ($otherServices as $service)
+                                            <li>
+                                               {{ $service->pivot->service_name }} - {{ $service->pivot->quantity }} x 
+                    {{ number_format($service->pivot->unit_price, 0, ',', '.') }}đ 
+                    = <strong>{{ number_format($service->pivot->total_price, 0, ',', '.') }}đ</strong>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @endif
+                            </td>
                         </tr>
                         <tr>
                             <td><strong>Thành tiền:</strong></td>
-                            <td class="fw-bold"><strong>{{ number_format($reservation->total_amount, 0, ',', '.') }} VNĐ</strong></td>
+                            <td class="fw-bold"><strong>{{ number_format($reservation->total_amount, 0, ',', '.') }} đ</strong></td>
                         </tr>
                     </tbody>
                 </table>

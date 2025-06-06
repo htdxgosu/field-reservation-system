@@ -42,7 +42,10 @@ class User extends  Authenticatable
     {
         return $this->hasMany(Review::class);
     }
-
+    public function services()
+    {
+        return $this->hasMany(Service::class);
+    }
     // Hàm để kiểm tra người dùng là chủ sân hay khách hàng
     public function isFieldOwner()
     {
@@ -66,11 +69,22 @@ class User extends  Authenticatable
     }
 
     // Số lần đặt sân chưa xác nhận
-    public function getPendingReservationsAttribute()
+    public function getCompleteReservationsAttribute()
     {
         $ownerId = Auth::id();
         $fieldIds = Field::where('user_id', $ownerId)->pluck('id');
-        return $this->reservations()->whereIn('field_id', $fieldIds)->where('status', 'chờ xác nhận')->count();
+        return $this->reservations()->whereIn('field_id', $fieldIds)->whereIn('status', ['đã xác nhận', 'đã thanh toán'])->count();
+    }
+      public function getTotalSpentByCustomer($ownerId)
+    {
+        // Lấy tất cả các sân mà chủ sân sở hữu
+        $fields = Field::where('user_id', $ownerId)->pluck('id');
+    
+        // Lấy tổng tiền của các hóa đơn mà khách hàng đã thanh toán cho các sân mà chủ sân sở hữu
+        return $this->reservations() // Liên kết tới reservations của khách hàng
+            ->whereIn('reservations.field_id', $fields) // Chỉ rõ 'field_id' thuộc bảng 'reservations'
+            ->join('invoices', 'reservations.id', '=', 'invoices.reservation_id') // Kết nối với bảng invoices
+            ->sum('invoices.total_amount'); // Tính tổng số tiền từ các hóa đơn
     }
 
     // Số lần đặt sân bị hủy

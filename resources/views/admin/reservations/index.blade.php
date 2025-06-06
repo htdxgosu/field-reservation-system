@@ -73,7 +73,6 @@
             <th>Tên sân</th>
             <th>Khách hàng</th>
             <th>Ngày</th>
-            <th>Thời gian</th>
             <th>Trạng thái</th>
             <th>Hành động</th>
         </tr>
@@ -93,9 +92,7 @@
                 <!-- Ngày -->
                 <td>{{ \Carbon\Carbon::parse($reservation->start_time)->format('d/m/Y') }}</td>
 
-                <!-- Thời gian -->
-                <td>{{ \Carbon\Carbon::parse($reservation->start_time)->format('H:i') }} đến 
-                      {{ \Carbon\Carbon::createFromFormat('d/m/Y H:i', $reservation->end_time)->format('H:i') }}</td>
+             
 
                 <!-- Trạng thái -->
                 <td>
@@ -131,10 +128,49 @@
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger mx-1">Hủy</button>
                         </form>
+                        {{-- Nút mở QR - chỉ hiện nếu chủ sân đã đăng ký thanh toán online --}}
+                            @php
+                                $fieldOwner = auth()->user()->fieldOwner;
+                            @endphp
+                            
+                            @if($fieldOwner && $fieldOwner->bank_id && $fieldOwner->bank_account)
+                                <button type="button" class="btn btn-success mx-1" onclick="showQRModal({{ $reservation->id }})">
+                                    Tạo QR thanh toán
+                                </button>
+                            @endif
+
                         <form action="{{ route('admin.reservations.pay', $reservation->id) }}" method="POST" class="d-inline">
                             @csrf
-                            <button type="submit" class="btn btn-warning btn-sm mx-1">Thanh toán</button>
+                            <button type="submit" class="btn btn-warning btn-sm mx-1">Xác nhận thanh toán</button>
                         </form>
+                        {{-- Modal hiển thị QR --}}
+                            <div id="qrModal-{{ $reservation->id }}" style="display:none; margin-top: 10px;">
+                                @php
+                                     $bankId = auth()->user()->fieldOwner->bank_id;
+                                    $account = auth()->user()->fieldOwner->bank_account;
+                                    $amount = $reservation->total_amount;
+                                    $content = 'ThanhToan_DatSan_' . $reservation->id;
+                                    $qrUrl = "https://img.vietqr.io/image/{$bankId}-{$account}-compact.png?amount={$amount}&addInfo={$content}";
+                                @endphp
+                                <div class="border p-2 mt-2 bg-light rounded">
+                                    <strong>Vui lòng quét mã để thanh toán:</strong><br>
+                                    <img src="{{ $qrUrl }}" alt="QR Code" width="300"><br>
+                                    <small>Nội dung: {{ $content }}</small><br>
+                                    <small>Số tiền: <strong class="text-danger">{{ number_format($amount) }} VND</strong></small>
+                                </div>
+                            </div>
+                        
+                            {{-- Script hiển thị QR --}}
+                            <script>
+                                function showQRModal(id) {
+                                    const el = document.getElementById('qrModal-' + id);
+                                    if (el.style.display === 'none') {
+                                        el.style.display = 'block';
+                                    } else {
+                                        el.style.display = 'none';
+                                    }
+                                }
+                            </script>
                     @elseif($reservation->status === 'đã thanh toán')
                        <a href="{{ route('admin.reservations.invoice', $reservation->id) }}" class="btn btn-primary btn-sm mx-1">Xem hóa đơn</a>
                     @endif

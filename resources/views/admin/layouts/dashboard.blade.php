@@ -46,6 +46,11 @@
             <li class="nav-item">
                 <a href="{{ route('admin.profile.index') }}" class="nav-link {{ request()->routeIs('admin.profile.index') ? 'active' : '' }}">Thay đổi thông tin cá nhân</a>
             </li>
+            <li class="nav-item">
+                <a href="{{ route('admin.services.index') }}" class="nav-link {{ request()->routeIs('admin.services.index') ? 'active' : '' }}">
+                    Quản lý dịch vụ khác
+                </a>
+            </li>
         </ul>
 
         <!-- Logout Button -->
